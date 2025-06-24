@@ -1,10 +1,12 @@
 // app/api/auth/[...nextauth]/route.ts
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+import { error } from 'console';
 import NextAuth from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import FacebookProvider from 'next-auth/providers/facebook';
 import GoogleProvider from 'next-auth/providers/google';
+import { SignInResponse } from 'next-auth/react';
 
 const handler = NextAuth({
   providers: [
@@ -42,13 +44,22 @@ const handler = NextAuth({
             password: credentials?.password,
           }),
         });
-        const user = await res.json();
+      
+        console.log('Response from login:', res.ok, res.status, res.statusText);
+        if (!res.ok)
+        {
+          if (res.status === 400) {
+            throw new Error('Invalid credentials. Please try again.');
+          }
 
-        if (user) {
+          throw new Error('An unexpected error occurred. Please try again later.');
+        };
+
+        const user = await res.json();
+        if (user) 
           return user;
-        } else {
-          return null;
-        }
+
+        throw new Error('An unexpected error occurred. Please try again later.');
       },
     }),
   ],
