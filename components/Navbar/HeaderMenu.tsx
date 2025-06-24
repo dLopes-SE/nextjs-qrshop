@@ -3,6 +3,7 @@ import { Group, Divider, Box, Button, Burger, Drawer, ScrollArea } from "@mantin
 import { createStyles } from "@mantine/styles";
 import QrshopLogo from "../Logo/QrshopLogo";
 import { useDisclosure } from "@mantine/hooks";
+import Link from "next/link";
 
 export function HeaderMenu() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -48,7 +49,7 @@ return (
           </Group>
 
           <Group visibleFrom="sm">
-            <Button variant="default">Log in</Button>
+            <Button component={Link} href="/login" variant="default">Log in</Button>
             <Button>Sign up</Button>
           </Group>
 
@@ -81,7 +82,7 @@ return (
           <Divider my="sm" />
 
           <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
+            <Button component={Link} href="/login" variant="default">Log in</Button>
             <Button>Sign up</Button>
           </Group>
         </ScrollArea>

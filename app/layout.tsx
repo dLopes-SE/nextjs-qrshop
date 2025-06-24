@@ -1,31 +1,36 @@
 import '@mantine/core/styles.css';
-
 import React from 'react';
-import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
-import { theme } from '../theme';
+import { Metadata } from 'next/types';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import { NextAuthProvider } from '../providers/SessionProvider';
 import { HeaderMenu } from '@/components/Navbar/HeaderMenu';
 
-export const metadata = {
-  title: 'Mantine Next.js template',
-  description: 'I am using Mantine with Next.js!',
+export const metadata: Metadata = {
+  title: 'QrShop - This is my title.',
+  description:
+    'QRShop – Secure, QR-powered shopping with smart access control.',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({ children }: { children: any }) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html lang="en">
       <head>
-        <ColorSchemeScript />
-        <link rel="shortcut icon" href="/favicon.svg" />
+        <link rel="icon" href="/favicon.ico" />
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
       </head>
       <body>
-        <MantineProvider>
-          <HeaderMenu />
-          <MantineProvider theme={theme}>{children}</MantineProvider>
-        </MantineProvider>
+        <NextAuthProvider>
+          <ThemeProvider>
+            <HeaderMenu />
+            {children}
+          </ThemeProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
