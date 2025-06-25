@@ -16,11 +16,12 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import axios from 'axios';
 
 export default function SignupCard() {
   const form = useForm({
     initialValues: {
-      name: '', 
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -38,30 +39,29 @@ export default function SignupCard() {
   const router = useRouter();
 
   const handleSignup = async (values: { name: string; email: string; password: string }) => {
-    // Replace this with your actual signup API call
-    try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: values.name, email: values.email, password: values.password }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.message || 'Signup failed');
-        return;
-      }
-
-      // Optionally, sign in the user after signup
-      await signIn('credentials', {
+    const handleSignup = (values: { email: string; password: string }) => {
+      axios.post('/api/auth/signup', {
         email: values.email,
         password: values.password,
-        callbackUrl: '/',
-      });
-      router.push('/');
-    } catch (err) {
-      setError('An unexpected error occurred.');
-    }
+      })
+        .then(() => {
+          // Optionally, sign in the user after signup
+          signIn('credentials', {
+            email: values.email,
+            password: values.password,
+            callbackUrl: '/',
+          }).then(() => {
+            router.push('/');
+          });
+        })
+        .catch((error) => {
+          if (axios.isAxiosError(error) && error.response) {
+            setError(error.response.data.message || 'Signup failed');
+          } else {
+            setError('An unexpected error occurred.');
+          }
+        });
+    };
   };
 
   return (

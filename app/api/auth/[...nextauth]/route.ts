@@ -42,7 +42,7 @@ const handler = NextAuth({
             return user;
           }
         })
-        .catch((error) => {
+        .catch((error : any) => {
           if (error.status === 400) {
             throw new Error('Invalid credentials. Please try again.');
           }
