@@ -20,11 +20,13 @@ import { useForm } from '@mantine/form';
 export default function SignupCard() {
   const form = useForm({
     initialValues: {
+      name: '', 
       email: '',
       password: '',
       confirmPassword: '',
     },
     validate: {
+      name: (value) => (value.trim().length > 0 ? null : 'Name is required'),
       email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
       password: (value) => (value.length >= 6 ? null : 'Password must be at least 6 characters'),
       confirmPassword: (value, values) =>
@@ -35,13 +37,13 @@ export default function SignupCard() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSignup = async (values: { email: string; password: string }) => {
+  const handleSignup = async (values: { name: string; email: string; password: string }) => {
     // Replace this with your actual signup API call
     try {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: values.email, password: values.password }),
+        body: JSON.stringify({ name: values.name, email: values.email, password: values.password }),
       });
 
       if (!res.ok) {
@@ -86,6 +88,12 @@ export default function SignupCard() {
 
           <form onSubmit={form.onSubmit(handleSignup)} style={{ width: '100%' }}>
             <Stack>
+              <TextInput
+                label="Name"
+                placeholder="Your name"
+                {...form.getInputProps('name')}
+                radius="md"
+              />
               <TextInput
                 label="Email"
                 placeholder="you@example.com"

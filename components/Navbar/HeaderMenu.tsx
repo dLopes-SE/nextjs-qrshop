@@ -72,7 +72,7 @@ export function HeaderMenu() {
             ) : (
               <>
                 <Button component={Link} href="/login" variant="default">Log in</Button>
-                <Button>Sign up</Button>
+                <Button component={Link} href="/signup">Sign up</Button>
               </>
             )}
           </Group>
@@ -120,7 +120,7 @@ export function HeaderMenu() {
             ) : (
               <>
                 <Button component={Link} href="/login" variant="default">Log in</Button>
-                <Button>Sign up</Button>
+                <Button component={Link} href="/signup">Sign up</Button>
               </>
             )}
           </Group>

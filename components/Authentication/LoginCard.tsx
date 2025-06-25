@@ -39,7 +39,6 @@ export default function LoginCard() {
       password: values.password,
     });
 
-debugger;
     if (res?.error) 
       setError(res.error);
     else {

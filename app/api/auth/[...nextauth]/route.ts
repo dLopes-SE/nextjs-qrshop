@@ -1,12 +1,10 @@
 // app/api/auth/[...nextauth]/route.ts
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-import { error } from 'console';
 import NextAuth from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import FacebookProvider from 'next-auth/providers/facebook';
 import GoogleProvider from 'next-auth/providers/google';
-import { SignInResponse } from 'next-auth/react';
+import axios from 'axios';
 
 const handler = NextAuth({
   providers: [
@@ -29,37 +27,35 @@ const handler = NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials: any) {
+      async authorize(credentials: Record<"email" | "password", string> | undefined) {
         if (!credentials?.email || !credentials.password) {
           return null;
         }
 
-        const res = await fetch('https://localhost:7256/user/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: credentials?.email,
-            password: credentials?.password,
-          }),
-        });
-      
-        console.log('Response from login:', res.ok, res.status, res.statusText);
-        if (!res.ok)
-        {
-          if (res.status === 400) {
+        const response = await axios.post('https://localhost:7256/user/login', {
+          email: credentials.email,
+          password: credentials.password,
+        })
+        .then(async (res : any) => {
+          const user = await res.json();
+          if (user) {
+            return user;
+          }
+        })
+        .catch((error) => {
+          if (error.status === 400) {
             throw new Error('Invalid credentials. Please try again.');
           }
 
+          console.error('An error occurred during login:', error);
           throw new Error('An unexpected error occurred. Please try again later.');
-        };
+        });
 
-        const user = await res.json();
-        if (user) 
-          return user;
+        if (response.data){
+          return response.data;
+        }
 
-        throw new Error('An unexpected error occurred. Please try again later.');
+        throw new Error('Invalid credentials. Please try again.');
       },
     }),
   ],
