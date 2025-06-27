@@ -1,5 +1,3 @@
-'use client';
-
 import { Center } from '@mantine/core';
 import SignUpCard from '@/components/Authentication/SignUpCard';
 

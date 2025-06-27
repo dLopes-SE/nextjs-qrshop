@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconBrandFacebook, IconBrandGoogle } from '@tabler/icons-react';
+import axios from 'axios';
 import { signIn } from 'next-auth/react';
 import {
   ActionIcon,
@@ -16,7 +17,6 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import axios from 'axios';
 
 export default function SignupCard() {
   const form = useForm({
@@ -39,29 +39,28 @@ export default function SignupCard() {
   const router = useRouter();
 
   const handleSignup = async (values: { name: string; email: string; password: string }) => {
-    const handleSignup = (values: { email: string; password: string }) => {
-      axios.post('/api/auth/signup', {
+    axios
+      .post('/api/auth/signup', {
         email: values.email,
         password: values.password,
       })
-        .then(() => {
-          // Optionally, sign in the user after signup
-          signIn('credentials', {
-            email: values.email,
-            password: values.password,
-            callbackUrl: '/',
-          }).then(() => {
-            router.push('/');
-          });
-        })
-        .catch((error) => {
-          if (axios.isAxiosError(error) && error.response) {
-            setError(error.response.data.message || 'Signup failed');
-          } else {
-            setError('An unexpected error occurred.');
-          }
+      .then(() => {
+        // Optionally, sign in the user after signup
+        signIn('credentials', {
+          email: values.email,
+          password: values.password,
+          callbackUrl: '/',
+        }).then(() => {
+          router.push('/');
         });
-    };
+      })
+      .catch((error) => {
+        if (axios.isAxiosError(error) && error.response) {
+          setError(error.response.data.message || 'Signup failed');
+        } else {
+          setError('An unexpected error occurred.');
+        }
+      });
   };
 
   return (

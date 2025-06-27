@@ -1,10 +1,10 @@
 // app/api/auth/[...nextauth]/route.ts
+import axios from 'axios';
 import NextAuth from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import FacebookProvider from 'next-auth/providers/facebook';
 import GoogleProvider from 'next-auth/providers/google';
-import axios from 'axios';
 
 const handler = NextAuth({
   providers: [
@@ -27,35 +27,30 @@ const handler = NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials: Record<"email" | "password", string> | undefined) {
+      async authorize(credentials: Record<'email' | 'password', string> | undefined) {
         if (!credentials?.email || !credentials.password) {
           return null;
         }
 
-        const response = await axios.post('https://localhost:7256/user/login', {
-          email: credentials.email,
-          password: credentials.password,
-        })
-        .then(async (res : any) => {
-          const user = await res.json();
-          if (user) {
-            return user;
-          }
-        })
-        .catch((error : any) => {
-          if (error.status === 400) {
+        return axios
+          .post('https://localhost:7256/user/login', {
+            email: credentials.email,
+            password: credentials.password,
+          })
+          .then((res) => {
+            if (res.data && res.data.jwt) {
+              // Provide a dummy id if your backend does not return one
+              return { id: credentials.email, jwt: res.data.jwt };
+            }
             throw new Error('Invalid credentials. Please try again.');
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 400) {
+              throw new Error('Invalid credentials. Please try again.');
+            }
+            throw new Error('An unexpected error occurred. Please try again later.');
           }
-
-          console.error('An error occurred during login:', error);
-          throw new Error('An unexpected error occurred. Please try again later.');
-        });
-
-        if (response.data){
-          return response.data;
-        }
-
-        throw new Error('Invalid credentials. Please try again.');
+        );
       },
     }),
   ],
@@ -64,22 +59,13 @@ const handler = NextAuth({
   },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: any }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.jwt = user.jwt;
-        token.name = user.name || user?.given_name || user?.login; // Add name from OAuth providers if available
-        token.image = user.image || user?.picture || null; // Add image from OAuth providers if available
+      if ((user as any)?.jwt) {
+        token.jwt = (user as any).jwt;
       }
-      console.log(token);
       return token;
     },
     async session({ session, token }: { session: any; token: JWT }) {
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.jwt = token.jwt;
-      session.user.name = token.name; // Add name to session
-      session.user.image = token.image; // Add image to session
+      session.jwt = token.jwt;
       return session;
     },
   },

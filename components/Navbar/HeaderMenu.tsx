@@ -40,7 +40,7 @@ export function HeaderMenu() {
   );
 
   return (
-    <Box pb={120}>
+    <Box pb={70}>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
           <QrshopLogo size={30} />
@@ -48,6 +48,9 @@ export function HeaderMenu() {
           <Group h="100%" gap={0} visibleFrom="sm">
             <a href="/" className={classes.link}>
               Home
+            </a>
+            <a href="/shop" className={classes.link}>
+              Shop
             </a>
             <a href="#" className={classes.link}>
               Learn
