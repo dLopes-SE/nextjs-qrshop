@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconBrandFacebook, IconBrandGoogle } from '@tabler/icons-react';
@@ -43,9 +45,11 @@ export default function SignupCard() {
       .post('/api/auth/signup', {
         email: values.email,
         password: values.password,
+        name: values.name
       })
       .then(() => {
-        // Optionally, sign in the user after signup
+        // TODO DYLAN: Instead of signing in immediatly after signup, redirect to a confirmation page
+        // and then sign in after the user confirms their email.
         signIn('credentials', {
           email: values.email,
           password: values.password,
@@ -55,6 +59,7 @@ export default function SignupCard() {
         });
       })
       .catch((error) => {
+        console.error('Signup error:', error);
         if (axios.isAxiosError(error) && error.response) {
           setError(error.response.data.message || 'Signup failed');
         } else {

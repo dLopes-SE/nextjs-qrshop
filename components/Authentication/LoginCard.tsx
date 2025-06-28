@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconBrandFacebook, IconBrandGoogle } from '@tabler/icons-react';
@@ -39,8 +41,9 @@ export default function LoginCard() {
       password: values.password,
     });
 
-    if (res?.error) 
+    if (res?.error) {
       setError(res.error);
+    }
     else {
       router.push('/');
     }

@@ -38,7 +38,7 @@ const handler = NextAuth({
             password: credentials.password,
           })
           .then((res) => {
-            if (res.data && res.data.jwt) {
+            if (res.data && res.data.token) {
               // Provide a dummy id if your backend does not return one
               return { id: credentials.email, jwt: res.data.jwt };
             }
