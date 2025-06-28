@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { IconPlus, IconMinus } from "@tabler/icons-react";
 import { ShopItem } from "@/types/ShopItem";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 interface ShopCardProps {
   item: ShopItem;
@@ -24,9 +24,6 @@ export default function ShopCard({ item }: ShopCardProps) {
 
   const handleDecrease = () => setCount((c) => Math.max(1, c - 1));
   const handleIncrease = () => setCount((c) => c + 1);
-
-  // Price is generated only once per card
-  const price = useMemo(() => (Math.random() * 10 + 20).toFixed(2), []);
 
   return (
     <Card
@@ -64,7 +61,7 @@ export default function ShopCard({ item }: ShopCardProps) {
             {item.name}
           </Text>
           <Badge color="blue" size="lg" variant="light" radius="sm">
-            ${price}
+            ${item.price}
           </Badge>
         </Group>
         <Text size="sm" c="dimmed" lineClamp={2}>

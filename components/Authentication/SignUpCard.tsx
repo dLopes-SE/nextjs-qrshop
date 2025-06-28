@@ -59,7 +59,6 @@ export default function SignupCard() {
         });
       })
       .catch((error) => {
-        console.error('Signup error:', error);
         if (axios.isAxiosError(error) && error.response) {
           setError(error.response.data.message || 'Signup failed');
         } else {
