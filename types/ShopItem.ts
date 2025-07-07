@@ -4,6 +4,7 @@ export interface ShopItem {
   slogan: string;
   description: string;
   price: number;
-  image: string;
+  image: any;
   category: string;
+  isFeaturedItem: boolean;
 }
