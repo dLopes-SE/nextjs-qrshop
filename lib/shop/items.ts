@@ -41,6 +41,15 @@ export async function createItem(item: Omit<ShopItem, "id"> & { image: string | 
   );
 }
 
+export async function deleteItem(id: string | number): Promise<void> {
+  return axios
+    .delete(`${API_BASE}/${id}`, { withCredentials: true })
+    .then(() => {})
+    .catch(() => {
+      throw new Error("Failed to delete item");
+    });
+}
+
 // Utility function to convert File to base64 string
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
