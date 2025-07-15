@@ -33,10 +33,16 @@ export const authOptions: AuthOptions = {
         }
 
         return axios
-          .post('https://localhost:7256/user/login', {
-            email: credentials.email,
-            password: credentials.password,
-          })
+          .post(
+            'https://localhost:7256/user/login',
+            {
+              email: credentials.email,
+              password: credentials.password,
+            },
+            {
+              withCredentials: true,
+            }
+          )
           .then((res) => {
             if (res.data && res.data.token) {
               return { id: credentials.email, jwt: res.data.token };
@@ -53,22 +59,22 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
-  async jwt({ token, user }: { token: JWT; user?: any }) {
-    // Only set token.jwt if user is present (on sign-in)
-    if (user?.jwt) {
-      token.jwt = user.jwt;
-    }
-    return token;
+    async jwt({ token, user }: { token: JWT; user?: any }) {
+      // Only set token.jwt if user is present (on sign-in)
+      if (user?.jwt) {
+        token.jwt = user.jwt;
+      }
+      return token;
+    },
+    async session({ session, token }: { session: any; token: JWT }) {
+      // Only expose jwt at the top level of session
+      session.jwt = token.jwt;
+      return session;
+    },
   },
-  async session({ session, token }: { session: any; token: JWT }) {
-    // Only expose jwt at the top level of session
-    session.jwt = token.jwt;
-    return session;
-  },
-},
   secret: process.env.NEXTAUTH_SECRET,
 };
 

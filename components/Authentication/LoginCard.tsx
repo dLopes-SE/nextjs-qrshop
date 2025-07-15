@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -41,10 +41,20 @@ export default function LoginCard() {
       password: values.password,
     });
 
-    if (res?.error) {
-      setError(res.error);
-    }
-    else {
+    const response = await fetch('/api/auth/proxy-login', {
+      method: 'POST',
+      body: JSON.stringify(values),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // <-- Important: ensures cookies are sent/received
+    });
+
+    const res2 = await response.json();
+
+    if (res2?.error) {
+      setError(res2.error);
+    } else {
       router.push('/');
     }
   };
