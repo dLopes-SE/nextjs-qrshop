@@ -10,6 +10,14 @@ export async function POST(req: NextRequest) {
 
   const response = NextResponse.json(backendRes.data, { status: backendRes.status });
 
+  // Set cookie for frontend domain (localhost:3000)
+  if (backendRes.data?.token) {
+    response.headers.set(
+      "set-cookie",
+      `auth=${backendRes.data.token}; Path=/; HttpOnly; Secure; SameSite=Lax;`
+    );
+  }
+  
   // Forward set-cookie header if present
   const setCookie = backendRes.headers["set-cookie"];
   if (setCookie) {

@@ -15,6 +15,7 @@ import QrshopLogo from "../Logo/QrshopLogo";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import ProfileMenu from "../Profile/ProfileMenu";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -43,14 +44,7 @@ export function HeaderMenu({ isAdmin = false }: { isAdmin?: boolean }) {
   const { data: session, status } = useSession();
   const { classes } = useStyles();
 
-  // SVG Profile Icon
-  const ProfileIcon = (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-      strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-3.314 3.134-6 7-6s7 2.686 7 6" />
-    </svg>
-  );
+
 
   return (
     <Box>
@@ -80,18 +74,7 @@ export function HeaderMenu({ isAdmin = false }: { isAdmin?: boolean }) {
 
           <Group visibleFrom="sm">
             {status === "loading" ? null : session?.user ? (
-              <ActionIcon
-                variant="light"
-                size="lg"
-                component={Link}
-                href="/profile"
-                title="Profile"
-                aria-label="Profile"
-                radius="xl"
-                color="indigo"
-              >
-                {ProfileIcon}
-              </ActionIcon>
+              <ProfileMenu />
             ) : (
               <>
                 <Button component={Link} href="/login" variant="outline" color="indigo" radius="md">
@@ -143,18 +126,7 @@ export function HeaderMenu({ isAdmin = false }: { isAdmin?: boolean }) {
 
           <Group justify="center" grow pb="xl" px="md">
             {status === "loading" ? null : session?.user ? (
-              <ActionIcon
-                variant="light"
-                size="lg"
-                component={Link}
-                href="/profile"
-                title="Profile"
-                aria-label="Profile"
-                radius="xl"
-                color="indigo"
-              >
-                {ProfileIcon}
-              </ActionIcon>
+              <ProfileMenu />
             ) : (
               <>
                 <Button component={Link} href="/login" variant="outline" color="indigo" radius="md">
