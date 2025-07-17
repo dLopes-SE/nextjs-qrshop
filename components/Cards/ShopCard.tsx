@@ -5,116 +5,90 @@ import {
   Image,
   Text,
   Group,
-  Button,
-  ActionIcon,
   Badge,
   Stack,
   rem,
+  Box,
 } from "@mantine/core";
-import { IconPlus, IconMinus } from "@tabler/icons-react";
 import { ShopItem } from "@/types/ShopItem";
-import { useState } from "react";
 
 interface ShopCardProps {
   item: ShopItem;
+  isLoggedIn?: boolean;
 }
 
 export default function ShopCard({ item }: ShopCardProps) {
-  const [count, setCount] = useState<number>(1);
-
-  const handleDecrease = () => setCount((c) => Math.max(1, c - 1));
-  const handleIncrease = () => setCount((c) => c + 1);
-
   return (
     <Card
       shadow="lg"
       padding="md"
-      radius="lg"
+      radius="xl"
       withBorder
       style={{
         width: "100%",
         maxWidth: 340,
         minWidth: 240,
-        minHeight: 420,
+        minHeight: 260,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        background:
-          "linear-gradient(135deg, #f8fafc 60%, #e0e7ff 100%)",
+        background: "linear-gradient(135deg, #f8fafc 60%, #e0e7ff 100%)",
         boxSizing: "border-box",
+        border: "1px solid #e0e7ff",
+        transition: "box-shadow 0.2s",
+        overflow: "hidden",
       }}
     >
       <Card.Section>
-        <Image
-          src={item.image}
-          alt={item.name}
-          height={200}
-          fit="cover"
-          radius="md"
-          style={{ borderBottom: "2px solid #e0e7ff" }}
-        />
-      </Card.Section>
-
-      <Stack gap={4} mt="md">
-        <Group justify="space-between" align="center">
-          <Text fw={700} size="lg" style={{ wordBreak: "break-word" }}>
-            {item.name}
-          </Text>
-          <Badge color="blue" size="lg" variant="light" radius="sm">
+        <Box
+          style={{
+            position: "relative",
+            width: "100%",
+            height: 180,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            src={item.image}
+            alt={item.name}
+            height={140}
+            fit="contain"
+            radius="md"
+            style={{
+              objectFit: "contain",
+              background: "transparent",
+              maxWidth: "80%",
+              maxHeight: "80%",
+            }}
+          />
+          <Badge
+            color="indigo"
+            size="md"
+            variant="filled"
+            radius="sm"
+            style={{
+              position: "absolute",
+              top: 12,
+              right: 12,
+              fontSize: rem(14),
+              boxShadow: "0 2px 8px rgba(80,112,255,0.08)",
+            }}
+          >
             ${item.price}
           </Badge>
-        </Group>
-        <Text size="sm" c="dimmed" lineClamp={2}>
+        </Box>
+      </Card.Section>
+
+      <Stack gap={8} mt="md">
+        <Text fw={700} size="lg" style={{ wordBreak: "break-word", color: "#3730a3" }}>
+          {item.name}
+        </Text>
+        <Text size="sm" c="dimmed" lineClamp={2} mt={2}>
           {item.slogan}
         </Text>
       </Stack>
-
-      <Group mt="md" justify="space-between" align="center" wrap="nowrap">
-        <Group wrap="nowrap">
-          <ActionIcon
-            variant="light"
-            onClick={handleDecrease}
-            aria-label="Decrease quantity"
-            size={36}
-            radius="xl"
-          >
-            <IconMinus size={20} />
-          </ActionIcon>
-          <Text
-            fw={600}
-            size="lg"
-            mx={rem(8)}
-            style={{
-              minWidth: 32, // Increased for double digits
-              textAlign: "center",
-              display: "inline-block",
-            }}
-          >
-            {count}
-          </Text>
-          <ActionIcon
-            variant="light"
-            onClick={handleIncrease}
-            aria-label="Increase quantity"
-            size={36}
-            radius="xl"
-          >
-            <IconPlus size={20} />
-          </ActionIcon>
-        </Group>
-        <Button
-          radius="xl"
-          color="indigo"
-          size="md"
-          px="lg"
-          style={{
-            minWidth: 150, // Ensures button width is stable for up to 3 digits
-            textAlign: "center",
-          }}
-        >
-          {`Add ${count} to cart`}
-        </Button>
-      </Group>
     </Card>
   );
 }

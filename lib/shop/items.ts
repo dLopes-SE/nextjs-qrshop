@@ -1,5 +1,5 @@
 import { ShopItem } from "@/types/ShopItem";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 export async function listItems(): Promise<ShopItem[]> {
   return axios

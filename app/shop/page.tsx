@@ -2,6 +2,8 @@ import { Center, SimpleGrid, Text } from "@mantine/core";
 import ShopCard from "@/components/Cards/ShopCard";
 import { ShopItem } from "@/types/ShopItem";
 import axios from "@/lib/axios";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 async function getItems(): Promise<ShopItem[]> {
   const res = await axios.get("/shop/item", {
