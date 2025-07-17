@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const backendRes = await axios.post("https://localhost:7256/user/login", body, {
-    withCredentials: true,
+  const backendRes = await axios.post("/user/login", body, {
     validateStatus: () => true,
   });
 

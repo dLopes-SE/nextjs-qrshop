@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   const { email, password, name } = await req.json();
 
   return axios
-    .post('https://localhost:7256/user/register', { email, password, name })
+    .post('/user/register', { email, password, name })
     .then((response) => {
       return NextResponse.json({ success: true, user: response.data }, { status: 201 });
     })

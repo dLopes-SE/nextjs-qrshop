@@ -1,11 +1,9 @@
 import { ShopItem } from "@/types/ShopItem";
 import axios from "axios";
 
-const API_BASE = "https://localhost:7256/shop/item";
-
 export async function listItems(): Promise<ShopItem[]> {
   return axios
-    .get<ShopItem[]>(API_BASE, { withCredentials: true })
+    .get<ShopItem[]>("/shop/item")
     .then((res) => res.data)
     .catch(() => {
       throw new Error("Failed to fetch items");
@@ -14,7 +12,7 @@ export async function listItems(): Promise<ShopItem[]> {
 
 export async function getItem(id: string | number): Promise<ShopItem> {
   return axios
-    .get<ShopItem>(`${API_BASE}/${id}`, { withCredentials: true })
+    .get<ShopItem>(`/shop/item/${id}`)
     .then((res) => res.data)
     .catch(() => {
       throw new Error("Failed to fetch item");
@@ -33,7 +31,7 @@ export async function createItem(item: Omit<ShopItem, "id"> & { image: string | 
   console.log("Final payload for creation:", payload);
 
   return axios
-    .post<ShopItem>(API_BASE, payload, { withCredentials: true })
+    .post<ShopItem>("/shop/item", payload)
     .then((res) => res.data)
     .catch(() => {
       throw new Error("Failed to create item");
@@ -43,7 +41,7 @@ export async function createItem(item: Omit<ShopItem, "id"> & { image: string | 
 
 export async function deleteItem(id: string | number): Promise<void> {
   return axios
-    .delete(`${API_BASE}/${id}`, { withCredentials: true })
+    .delete(`/shop/item/${id}`)
     .then(() => {})
     .catch(() => {
       throw new Error("Failed to delete item");

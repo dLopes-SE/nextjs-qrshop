@@ -1,5 +1,5 @@
 // app/api/auth/[...nextauth]/route.ts
-import axios from 'axios';
+import axios from '@/lib/axios';
 import NextAuth, { AuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -34,13 +34,10 @@ export const authOptions: AuthOptions = {
 
         return axios
           .post(
-            'https://localhost:7256/user/login',
+            '/user/login',
             {
               email: credentials.email,
               password: credentials.password,
-            },
-            {
-              withCredentials: true,
             }
           )
           .then((res) => {

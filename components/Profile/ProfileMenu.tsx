@@ -2,6 +2,7 @@
 
 import { signOut } from 'next-auth/react';
 import { ActionIcon, Menu } from '@mantine/core';
+import axios from '@/lib/axios';
 
 // Move ProfileIcon definition outside the component for clarity
 const ProfileIcon = (
@@ -21,17 +22,19 @@ const ProfileIcon = (
 );
 
 export default function ProfileMenu() {
-  const handleLogout = async () => {
-    // Call the backend logout endpoint directly
-    const response = await fetch('https://localhost:7256/user/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-    if (response.ok) {
-      signOut({ callbackUrl: '/' });
-    } else {
-      console.error('Logout failed');
-    }
+  const handleLogout = () => {
+    axios
+      .post('/user/logout')
+      .then((response) => {
+        if (response.status === 200) {
+          signOut({ callbackUrl: '/' });
+        } else {
+          console.error('Logout failed');
+        }
+      })
+      .catch((error) => {
+        console.error('Logout failed', error);
+      });
   };
 
   return (

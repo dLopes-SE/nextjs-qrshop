@@ -1,15 +1,16 @@
 import { Center, SimpleGrid, Text } from "@mantine/core";
 import ShopCard from "@/components/Cards/ShopCard";
 import { ShopItem } from "@/types/ShopItem";
+import axios from "@/lib/axios";
 
 async function getItems(): Promise<ShopItem[]> {
-  const res = await fetch("https://localhost:7256/shop/item", {
-    cache: "no-store",
+  const res = await axios.get("/shop/item", {
+    validateStatus: () => true,
   });
-  if (!res.ok) {
+  if (res.status !== 200) {
     throw new Error("Failed to load items");
   }
-  return res.json();
+  return res.data;
 }
 
 export default async function ShopPage() {

@@ -47,7 +47,7 @@ export default function LoginCard() {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include', // <-- Important: ensures cookies are sent/received
+      credentials: 'include',
     });
 
     const res2 = await response.json();
