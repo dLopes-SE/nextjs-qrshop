@@ -1,17 +1,10 @@
 import { Center, SimpleGrid, Text } from "@mantine/core";
-import ShopCard from "@/components/Cards/ShopCard";
+import ShopCard from "@/components/shop/Cards/ShopCard";
 import { ShopItem } from "@/types/ShopItem";
 import axios from "@/lib/axios";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 async function getItems(): Promise<ShopItem[]> {
-  const res = await axios.get("/shop/item", {
-    validateStatus: () => true,
-  });
-  if (res.status !== 200) {
-    throw new Error("Failed to load items");
-  }
+  const res = await axios.get("/shop/item");
   return res.data;
 }
 

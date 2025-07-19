@@ -10,9 +10,9 @@ export async function listItems(): Promise<ShopItem[]> {
     });
 }
 
-export async function getItem(id: string | number): Promise<ShopItem> {
+export async function getItem(id: string | number): Promise<{ item: ShopItem; quantity: number }> {
   return axios
-    .get<ShopItem>(`/shop/item/${id}`)
+    .get<{ item: ShopItem; quantity: number }>(`/shop/item/${id}`)
     .then((res) => res.data)
     .catch(() => {
       throw new Error("Failed to fetch item");
