@@ -10,6 +10,7 @@ export default async function ItemPage({ params }: { params: { itemId: string } 
 
   try {
     const result = await getItem(itemId);
+    console.log("Fetched item:", result);
     item = result.item;
     quantity = result.quantity;
   } catch {

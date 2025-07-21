@@ -32,28 +32,20 @@ export default function LoginCard() {
   });
 
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleCredentialsLogin = async (values: { email: string; password: string }) => {
+    setLoading(true);
     const res = await signIn('credentials', {
       redirect: false,
       email: values.email,
       password: values.password,
     });
+    setLoading(false);
 
-    const response = await fetch('/api/auth/proxy-login', {
-      method: 'POST',
-      body: JSON.stringify(values),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    const res2 = await response.json();
-
-    if (res2?.error) {
-      setError(res2.error);
+    if (res?.error) {
+      setError(res.error);
     } else {
       router.push('/');
     }
@@ -114,6 +106,7 @@ export default function LoginCard() {
                 mt="md"
                 variant="gradient"
                 gradient={{ from: 'pink', to: 'blue' }}
+                loading={loading}
               >
                 Login
               </Button>

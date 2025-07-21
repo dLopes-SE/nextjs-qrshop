@@ -1,5 +1,6 @@
 import { ShopItem } from "@/types/ShopItem";
 import axios from "@/lib/axios";
+import serverAxios from "../serverAxios";
 
 export async function listItems(): Promise<ShopItem[]> {
   return axios
@@ -11,7 +12,7 @@ export async function listItems(): Promise<ShopItem[]> {
 }
 
 export async function getItem(id: string | number): Promise<{ item: ShopItem; quantity: number }> {
-  return axios
+  return serverAxios
     .get<{ item: ShopItem; quantity: number }>(`/shop/item/${id}`)
     .then((res) => res.data)
     .catch(() => {

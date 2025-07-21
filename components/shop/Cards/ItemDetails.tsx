@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from "next-auth/react";
 import { IconTrash } from '@tabler/icons-react';
 import {
   Badge,
@@ -23,6 +24,7 @@ interface ItemDetailsProps {
 }
 
 export default function ItemDetails({ item, cartQuantity = 1 }: ItemDetailsProps) {
+  const { data: session } = useSession();
   const [quantity, setQuantity] = useState<number>(cartQuantity);
   const [quantityToAdd, setQuantityToAdd] = useState<number>(1);
   const [inputError, setInputError] = useState<string | undefined>(undefined);
@@ -107,37 +109,41 @@ export default function ItemDetails({ item, cartQuantity = 1 }: ItemDetailsProps
               {item.description}
             </Text>
             <Divider my="xs" />
-            <Group>
-              {quantity > 0 && (
-                <Button
-                  variant="outline"
-                  color="red"
-                  onClick={handleRemoveFromCart}
-                  aria-label="Remove from cart"
-                >
-                  <IconTrash size={20} />
-                </Button>
-              )}
-              <NumberInput
-                value={quantity > 0 ? quantity : quantityToAdd}
-                onChange={(val) => handleNumberInputChange(Number(val))}
-                min={1}
-                max={99}
-                size="md"
-                style={{ width: 120 }}
-                error={inputError}
-              />
-            </Group>
-            {quantity <= 0 && (
-              <Button
-                fullWidth
-                radius="md"
-                color="indigo"
-                style={{ fontWeight: 700 }}
-                onClick={handleAddToCart}
-              >
-                Add to cart
-              </Button>
+            {session && (
+              <>
+                <Group>
+                  {quantity > 0 && (
+                    <Button
+                      variant="outline"
+                      color="red"
+                      onClick={handleRemoveFromCart}
+                      aria-label="Remove from cart"
+                    >
+                      <IconTrash size={20} />
+                    </Button>
+                  )}
+                  <NumberInput
+                    value={quantity > 0 ? quantity : quantityToAdd}
+                    onChange={(val) => handleNumberInputChange(Number(val))}
+                    min={1}
+                    max={99}
+                    size="md"
+                    style={{ width: 120 }}
+                    error={inputError}
+                  />
+                </Group>
+                {quantity <= 0 && (
+                  <Button
+                    fullWidth
+                    radius="md"
+                    color="indigo"
+                    style={{ fontWeight: 700 }}
+                    onClick={handleAddToCart}
+                  >
+                    Add to cart
+                  </Button>
+                )}
+              </>
             )}
           </Stack>
         </Grid.Col>
