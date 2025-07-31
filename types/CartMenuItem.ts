@@ -1,6 +1,7 @@
 export interface CartMenuItem {
     id: number;
+    itemId: number | string;
+    name: string;
     image: string;
-    qty: number;
-    price: number;
+    quantity: number;
 }

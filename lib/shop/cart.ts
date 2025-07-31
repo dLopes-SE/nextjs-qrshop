@@ -1,17 +1,17 @@
 import axios from "@/lib/axios";
 
-export async function addToCart(itemId: string | number, quantity: number): Promise<void> {
+export async function addToCart(itemId: string | number, quantity: number): Promise<number> {
   return axios
     .post(`/shop/cart`, { itemId, quantity })
-    .then(() => {})
+    .then((res) => res.data.cartItemId)
     .catch(() => {
       throw new Error("Failed to add item to cart");
     });
 }
 
-export async function updateCartItem(itemId: string | number, quantity: number): Promise<void> {
+export async function updateCartItem(cartItemId: string | number, quantity: number): Promise<void> {
   return axios
-    .put(`/shop/cart/${itemId}`, { quantity })
+    .put(`/shop/cart/${cartItemId}`, { quantity })
     .then(() => {})
     .catch(() => {
       throw new Error("Failed to update cart item");

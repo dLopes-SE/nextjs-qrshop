@@ -20,14 +20,16 @@ import { ShopItem } from '@/types/ShopItem';
 
 interface ItemDetailsProps {
   item: ShopItem;
+  cartItemId?: number | undefined;
   cartQuantity?: number;
 }
 
-export default function ItemDetails({ item, cartQuantity = 1 }: ItemDetailsProps) {
+export default function ItemDetails({ item, cartItemId: initialCartItemId, cartQuantity = 0 }: ItemDetailsProps) {
   const { data: session } = useSession();
   const [quantity, setQuantity] = useState<number>(cartQuantity);
   const [quantityToAdd, setQuantityToAdd] = useState<number>(1);
   const [inputError, setInputError] = useState<string | undefined>(undefined);
+  const [cartItemId, setCartItemId] = useState<number | undefined>(initialCartItemId);
 
   const handleNumberInputChange = (value: number | undefined) => {
     setInputError(undefined); // Reset error on input change
@@ -53,24 +55,31 @@ export default function ItemDetails({ item, cartQuantity = 1 }: ItemDetailsProps
     }
 
     addToCart(item.id, quantityToAdd)
-      .then(() => {
+      .then((cartItemId) => {
         setQuantity(quantityToAdd);
         setQuantityToAdd(1);
+        if (cartItemId !== undefined) {
+          setCartItemId(cartItemId);
+        }
       })
       .catch((error) => {
         setInputError(error.message);
       });
   };
 
-  const updateCartItemQuantity = (quantity: number) => {
-    if (quantity < 1 || quantity > 99) {
+  const updateCartItemQuantity = (newQuantity: number) => {
+    if (!cartItemId) {
+      setInputError('Cart item not found.');
+      return;
+    }
+    if (newQuantity < 1 || newQuantity > 99) {
       setInputError('Please enter a valid quantity (1-99)');
       return;
     }
 
-    updateCartItem(item.id, quantity)
+    updateCartItem(cartItemId, newQuantity)
       .then(() => {
-        setQuantity(quantity);
+        setQuantity(newQuantity);
         setQuantityToAdd(1);
       })
       .catch((error) => {
@@ -79,10 +88,15 @@ export default function ItemDetails({ item, cartQuantity = 1 }: ItemDetailsProps
   };
 
   const handleRemoveFromCart = () => {
-    removeFromCart(item.id)
+    if (!cartItemId) {
+      setInputError('Cart item not found.');
+      return;
+    }
+    removeFromCart(cartItemId)
       .then(() => {
         setQuantity(0);
         setQuantityToAdd(1);
+        setCartItemId(undefined);
       })
       .catch((error) => {
         setInputError(error.message);

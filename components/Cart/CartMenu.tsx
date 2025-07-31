@@ -22,6 +22,7 @@ export default function CartMenu() {
   useEffect(() => {
     axios.get('/cart')
       .then(res => {
+        console.log(res.data);
         setCartItems(res.data || []);
       })
       .catch(() => {
@@ -32,7 +33,7 @@ export default function CartMenu() {
       });
   }, []);
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const subtotal = 999.99; // TODO DYLAN: modify getCart so that it returns subtotal
 
   return (
     <Menu shadow="md" width={300} position="bottom-end">
