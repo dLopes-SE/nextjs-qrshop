@@ -1,41 +1,23 @@
-import { Center, Loader, Text } from "@mantine/core";
+import { Center, Text } from "@mantine/core";
 import ItemDetails from "@/components/shop/Cards/ItemDetails";
 import { getItem } from "@/lib/shop/items";
 
-export default async function ItemPage({ params }: { params: { itemId: string } }) {
-  const { itemId } = params;
-  let item: any = null;
-  let quantity: number = 1;
-  let error: string | null = null;
+export default async function ItemPage({ params }: { params: Promise<{ itemId: string }> }) {
+  const { itemId } = await params;
 
-  try {
-    const result = await getItem(itemId);
-    console.log("Fetched item:", result);
-    item = result.item;
-    quantity = result.quantity;
-  } catch {
-    error = "Failed to load item.";
-  }
+  const result = await getItem(itemId);
 
-  if (error) {
+  if (!result || !result.shopItem) {
     return (
       <Center h="100vh">
-        <Text c="red">{error}</Text>
-      </Center>
-    );
-  }
-
-  if (!item) {
-    return (
-      <Center h="100vh">
-        <Loader />
+        <Text c="red">Failed to load item.</Text>
       </Center>
     );
   }
 
   return (
     <Center py="xl">
-      <ItemDetails item={item} cartQuantity={quantity} />
+      <ItemDetails item={result.shopItem} cartItemId={result.cartItemId} cartQuantity={result.quantity} />
     </Center>
   );
 }

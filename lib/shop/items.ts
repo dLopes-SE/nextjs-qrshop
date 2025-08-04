@@ -11,10 +11,13 @@ export async function listItems(): Promise<ShopItem[]> {
     });
 }
 
-export async function getItem(id: string | number): Promise<{ item: ShopItem; quantity: number }> {
+export async function getItem(id: string | number): Promise<{ shopItem: ShopItem; cartItemId: number; quantity: number }> {
   return serverAxios
-    .get<{ item: ShopItem; quantity: number }>(`/shop/item/${id}`)
-    .then((res) => res.data)
+    .get<{ item: ShopItem; cartItemId: number, quantity: number }>(`/shop/item/${id}`)
+    .then((res) => {
+      const { item, cartItemId, quantity } = res.data;
+      return { shopItem: item, cartItemId, quantity };
+    })
     .catch(() => {
       throw new Error("Failed to fetch item");
     });
