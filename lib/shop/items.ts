@@ -4,7 +4,7 @@ import serverAxios from "../serverAxios";
 
 export async function listItems(): Promise<ShopItem[]> {
   return axios
-    .get<ShopItem[]>("/shop/item")
+    .get<ShopItem[]>('/shop/item')
     .then((res) => res.data)
     .catch(() => {
       throw new Error("Failed to fetch items");

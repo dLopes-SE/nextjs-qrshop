@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import CartMenuItem from './CartMenuItem';
 import type { CartMenuItem as CartMenuItemType } from '@/types/CartMenuItem';
 import axios from '@/lib/axios';
+import { getCart } from '@/lib/shop/cart';
 
 const CartIcon = (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -18,12 +19,13 @@ const CartIcon = (
 export default function CartMenu() {
   const [cartItems, setCartItems] = useState<CartMenuItemType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subTotal, setSubTotal] = useState(0);
 
   useEffect(() => {
-    axios.get('/cart')
+    getCart(true)
       .then(res => {
-        console.log(res.data);
-        setCartItems(res.data || []);
+        setCartItems(res.items || []);
+        setSubTotal(res.subTotal || 0);
       })
       .catch(() => {
         setCartItems([]);
@@ -32,8 +34,6 @@ export default function CartMenu() {
         setLoading(false);
       });
   }, []);
-
-  const subtotal = 999.99; // TODO DYLAN: modify getCart so that it returns subtotal
 
   return (
     <Menu shadow="md" width={300} position="bottom-end">
@@ -46,7 +46,7 @@ export default function CartMenu() {
         <Stack gap="xs">
           <Stack align="center" gap={2} mt={10} mb={2}>
             <Text fw={700} size="sm" color="indigo.7">Subtotal</Text>
-            <Text fw={700} size="lg" color="orange.6">${subtotal.toFixed(2)}</Text>
+            <Text fw={700} size="lg" color="orange.6">${subTotal.toFixed(2)}</Text>
           </Stack>
           <Divider my="xs" />
           {loading ? (

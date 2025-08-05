@@ -1,4 +1,14 @@
 import axios from '@/lib/axios';
+import { CartType } from '@/types/Cart';
+
+export async function getCart(isCartPreview : boolean): Promise<CartType> {
+  return axios
+    .get<CartType>(`/shop/cart?isCartPreview=${isCartPreview}`)
+    .then((res) => res.data)
+    .catch(() => {
+      throw new Error('Failed to fetch cart');
+    });
+}
 
 export async function addToCart(itemId: string | number, quantity: number): Promise<number> {
   return axios
