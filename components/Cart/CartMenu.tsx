@@ -1,10 +1,9 @@
 'use client';
 
-import { ActionIcon, Menu, Text, Divider, Button, Stack } from '@mantine/core';
+import { ActionIcon, Menu, Text, Divider, Button, Stack, Indicator } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import CartMenuItem from './CartMenuItem';
 import type { CartMenuItem as CartMenuItemType } from '@/types/CartMenuItem';
-import axios from '@/lib/axios';
 import { getCart } from '@/lib/shop/cart';
 
 const CartIcon = (
@@ -20,15 +19,18 @@ export default function CartMenu() {
   const [cartItems, setCartItems] = useState<CartMenuItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [subTotal, setSubTotal] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     getCart(true)
       .then(res => {
         setCartItems(res.items || []);
         setSubTotal(res.subTotal || 0);
+        setTotalItems(res.quantity || 0);
       })
       .catch(() => {
         setCartItems([]);
+        setTotalItems(0);
       })
       .finally(() => {
         setLoading(false);
@@ -38,9 +40,17 @@ export default function CartMenu() {
   return (
     <Menu shadow="md" width={300} position="bottom-end">
       <Menu.Target>
-        <ActionIcon variant="light" size="lg" radius="xl" color="indigo" aria-label="Cart">
-          {CartIcon}
-        </ActionIcon>
+        <Indicator
+          label={totalItems > 0 ? totalItems : undefined}
+          size={18}
+          color="red"
+          offset={6}
+          disabled={totalItems === 0}
+        >
+          <ActionIcon variant="light" size="lg" radius="xl" color="indigo" aria-label="Cart">
+            {CartIcon}
+          </ActionIcon>
+        </Indicator>
       </Menu.Target>
       <Menu.Dropdown>
         <Stack gap="xs">
@@ -55,7 +65,7 @@ export default function CartMenu() {
             <Text size="sm" c="dimmed" ta="center">Your cart is empty.</Text>
           ) : (
             <>
-              {cartItems.slice(0, 5).map((item) => (
+              {cartItems.map((item) => (
                 <CartMenuItem
                   key={item.id}
                   {...item}
