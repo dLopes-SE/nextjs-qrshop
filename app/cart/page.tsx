@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Center, Stack, Text, Divider, Button, Group, Paper, Loader, Grid, Box } from '@mantine/core';
 import CartPageItem from '@/components/Cart/CartPageItem';
-import { getCart, updateCartItem } from '@/lib/shop/cart';
+import { getCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
 import type { CartMenuItemWithDetails } from '@/types/CartMenuItemWithDetails';
 
 export default function CartPage() {
@@ -26,9 +26,20 @@ export default function CartPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Handler for updating cart item quantity
-  const onUpdateCart = async (quantity: number) => {
-    setTotalItems(quantity);
+  const onUpdateCart = async (id: number, quantity: number) => {
+    await updateCartItem(id, quantity);
+    const res = await getCart();
+    setCartItems(res.items || []);
+    setSubTotal(res.subTotal || 0);
+    setTotalItems(res.quantity || 0);
+  };
+
+  const onItemRemove = async (id: number) => {
+    await removeFromCart(id);
+    const res = await getCart();
+    setCartItems(res.items || []);
+    setSubTotal(res.subTotal || 0);
+    setTotalItems(res.quantity || 0);
   };
 
   if (loading) {
@@ -55,7 +66,7 @@ export default function CartPage() {
                 </Text>
               ) : (
                 cartItems.map((item) => (
-                  <CartPageItem key={item.id} item={item} onUpdateQuantity={onUpdateCart} />
+                  <CartPageItem key={item.id} item={item} onItemRemove={onItemRemove} onUpdateCart={onUpdateCart} />
                 ))
               )}
             </Stack>
