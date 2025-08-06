@@ -4,7 +4,7 @@ import { ActionIcon, Menu, Text, Divider, Button, Stack, Indicator } from '@mant
 import { useEffect, useState } from 'react';
 import CartMenuItem from './CartMenuItem';
 import type { CartMenuItem as CartMenuItemType } from '@/types/CartMenuItem';
-import { getCart } from '@/lib/shop/cart';
+import { getCartPreview } from '@/lib/shop/cart';
 
 const CartIcon = (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -22,7 +22,7 @@ export default function CartMenu() {
   const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    getCart(true)
+    getCartPreview()
       .then(res => {
         setCartItems(res.items || []);
         setSubTotal(res.subTotal || 0);

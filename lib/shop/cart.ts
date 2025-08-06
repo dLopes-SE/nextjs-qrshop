@@ -1,9 +1,19 @@
 import axios from '@/lib/axios';
 import { CartType } from '@/types/Cart';
+import { CartPreviewType } from '@/types/CartPreview';
 
-export async function getCart(isCartPreview : boolean): Promise<CartType> {
+export async function getCartPreview(): Promise<CartPreviewType> {
   return axios
-    .get<CartType>(`/shop/cart?isCartPreview=${isCartPreview}`)
+    .get<CartPreviewType>('/shop/cart?isCartPreview=true')
+    .then((res) => res.data)
+    .catch(() => {
+      throw new Error('Failed to fetch cart');
+    });
+}
+
+export async function getCart(): Promise<CartType> {
+  return axios
+    .get<CartType>('/shop/cart')
     .then((res) => res.data)
     .catch(() => {
       throw new Error('Failed to fetch cart');
