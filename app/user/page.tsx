@@ -1,7 +1,6 @@
 import { Box } from '@mantine/core';
 import UserInfo from '@/components/User/UserInfo';
 import { UserInfo as UserInfoType } from '@/types/User/UserInfo';
-import { Address } from '@/types/User/Address';
 import { getUserInfo } from '@/lib/user/userinfo';
 
 export default async function UserPage() {
