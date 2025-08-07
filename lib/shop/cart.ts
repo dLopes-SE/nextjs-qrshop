@@ -1,6 +1,6 @@
 import axios from '@/lib/axios';
-import { CartType } from '@/types/Cart';
-import { CartPreviewType } from '@/types/CartPreview';
+import { CartType } from '@/types/Cart/Cart';
+import { CartPreviewType } from '@/types/Cart/CartPreview';
 
 export async function getCartPreview(): Promise<CartPreviewType> {
   return axios

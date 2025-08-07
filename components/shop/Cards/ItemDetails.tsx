@@ -16,7 +16,7 @@ import {
   Text,
 } from '@mantine/core';
 import { addToCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
-import { ShopItem } from '@/types/ShopItem';
+import { ShopItem } from '@/types/Shop/ShopItem';
 
 interface ItemDetailsProps {
   item: ShopItem;

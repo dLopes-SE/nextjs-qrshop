@@ -16,7 +16,7 @@ import {
   FileInput,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { ShopItem } from "@/types/ShopItem";
+import { ShopItem } from "@/types/Shop/ShopItem";
 
 interface ShopItemModalProps {
   mode: "view" | "create";

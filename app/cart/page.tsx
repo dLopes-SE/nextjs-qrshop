@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Center, Stack, Text, Divider, Button, Group, Paper, Loader, Grid, Box } from '@mantine/core';
 import CartPageItem from '@/components/Cart/CartPageItem';
 import { getCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
-import type { CartMenuItemWithDetails } from '@/types/CartMenuItemWithDetails';
+import type { CartMenuItemWithDetails } from '@/types/Cart/CartMenuItemWithDetails';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartMenuItemWithDetails[]>([]);

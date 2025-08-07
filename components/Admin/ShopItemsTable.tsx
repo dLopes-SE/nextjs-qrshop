@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Table, Button, Group, Text } from "@mantine/core";
-import { ShopItem } from "@/types/ShopItem";
+import { ShopItem } from "@/types/Shop/ShopItem";
 import ShopItemModal from "./ShopItemModal";
 
 interface ShopItemsTableProps {

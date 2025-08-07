@@ -1,5 +1,5 @@
-import { Text, Avatar, Divider, Stack, Badge, Group } from '@mantine/core';
-import type { CartMenuItem as CartMenuItemType } from '@/types/CartMenuItem';
+import { Text, Avatar, Divider, Stack, Badge } from '@mantine/core';
+import type { CartMenuItem as CartMenuItemType } from '@/types/Cart/CartMenuItem';
 import { useRouter } from 'next/navigation';
 
 

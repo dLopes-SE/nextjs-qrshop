@@ -1,5 +1,5 @@
 import { Badge, Button, Divider, Group, Image, NumberInput, Stack, Text } from '@mantine/core';
-import type { CartMenuItemWithDetails } from '@/types/CartMenuItemWithDetails';
+import type { CartMenuItemWithDetails } from '@/types/Cart/CartMenuItemWithDetails';
 
 interface CartPageItemProps {
   item: CartMenuItemWithDetails;

@@ -3,7 +3,7 @@
 import { ActionIcon, Menu, Text, Divider, Button, Stack, Indicator } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import CartMenuItem from './CartMenuItem';
-import type { CartMenuItem as CartMenuItemType } from '@/types/CartMenuItem';
+import type { CartMenuItem as CartMenuItemType } from '@/types/Cart/CartMenuItem';
 import { getCartPreview } from '@/lib/shop/cart';
 
 const CartIcon = (

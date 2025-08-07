@@ -1,6 +1,6 @@
 import { Center, SimpleGrid, Text } from "@mantine/core";
 import ShopCard from "@/components/shop/Cards/ShopCard";
-import { ShopItem } from "@/types/ShopItem";
+import { ShopItem } from "@/types/Shop/ShopItem";
 import axios from "@/lib/axios";
 
 async function getItems(): Promise<ShopItem[]> {

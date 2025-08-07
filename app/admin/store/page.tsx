@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { Button, Center, Group, Modal, Stack, Text, Title } from '@mantine/core';
 import ShopItemsTable from '@/components/Admin/ShopItemsTable';
 import { createItem, deleteItem, listItems } from '@/lib/shop/items';
-import { ShopItem } from '@/types/ShopItem';
+import { ShopItem } from '@/types/Shop/ShopItem';
 
 const ShopItemModal = dynamic(() => import('@/components/Admin/ShopItemModal'), { ssr: false });
 

@@ -45,6 +45,7 @@ export default function ProfileMenu() {
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
+        <Menu.Item component="a" href="/user">Profile</Menu.Item>
         <Menu.Item onClick={handleLogout}>Logout</Menu.Item>
       </Menu.Dropdown>
     </Menu>

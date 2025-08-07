@@ -10,7 +10,7 @@ import {
   rem,
   Box,
 } from "@mantine/core";
-import { ShopItem } from "@/types/ShopItem";
+import { ShopItem } from "@/types/Shop/ShopItem";
 
 interface ShopCardProps {
   item: ShopItem;

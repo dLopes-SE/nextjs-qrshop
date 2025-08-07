@@ -1,4 +1,4 @@
-import { ShopItem } from "@/types/ShopItem";
+import { ShopItem } from "@/types/Shop/ShopItem";
 import axios from "@/lib/axios";
 import serverAxios from "../serverAxios";
 

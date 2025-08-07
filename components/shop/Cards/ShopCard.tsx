@@ -8,7 +8,7 @@ import {
   Badge,
   Stack,
 } from "@mantine/core";
-import { ShopItem } from "@/types/ShopItem";
+import { ShopItem } from "@/types/Shop/ShopItem";
 import Link from "next/link";
 
 interface ShopCardProps {
