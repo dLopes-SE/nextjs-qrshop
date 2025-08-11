@@ -20,3 +20,30 @@ export async function addAddress(address: AddressPayload): Promise<void> {
       throw new Error('Failed to add address');
     });
 }
+
+export async function updateAddress(id: number, address: AddressPayload): Promise<void> {
+  return axios
+    .patch<void>(`/user/address/${id}`, address)
+    .then(() => {})
+    .catch(() => {
+      throw new Error('Failed to update address');
+    });
+}
+
+export async function removeAddress(id: number): Promise<void> {
+  return axios
+    .delete<void>(`/user/address/${id}`)
+    .then(() => {})
+    .catch(() => {
+      throw new Error('Failed to delete address');
+    });
+}
+
+export async function setFavouriteAddress(id: number): Promise<void> {
+  return axios
+    .post<void>(`/user/address/${id}/favourite`)
+    .then(() => {})
+    .catch(() => {
+      throw new Error('Failed to update address');
+    });
+}
