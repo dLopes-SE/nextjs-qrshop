@@ -1,5 +1,6 @@
 import serverAxios from '@/lib/serverAxios';
 import { AddressPayload } from '@/types/User/AddressPayload';
+import { Address } from '@/types/User/Address';
 import { UserInfo as UserInfoType } from '@/types/User/UserInfo';
 import axios from '@/lib/axios';
 
@@ -45,5 +46,17 @@ export async function setFavouriteAddress(id: number): Promise<void> {
     .then(() => {})
     .catch(() => {
       throw new Error('Failed to update address');
+    });
+}
+
+export async function listAddresses(): Promise<Address[]> {
+  return axios
+    .get<Address[]>('/user/address')
+    .then(res => {
+      console.log('Addresses response:', res);
+      return res.data;
+    })
+    .catch(() => {
+      throw new Error('Failed to fetch addresses');
     });
 }
