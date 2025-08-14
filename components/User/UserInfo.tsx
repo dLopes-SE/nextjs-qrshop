@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Card, Stack, Text, Group, Divider, Button } from '@mantine/core';
-import { Address } from '@/types/User/Address';
+import { Address } from '@/types/User/AddressPayload';
 import { UserInfo as UserInfoType } from '@/types/User/UserInfo';
 import UserAddress from './UserAddress';
 import AddressModal from './AddressModal';
@@ -17,22 +17,22 @@ export default function UserInfo({ user }: { user: UserInfoType }) {
   // Optionally, you may want to manage addresses state locally for instant UI update
   // const [addresses, setAddresses] = useState<Address[]>(user.addresses);
 
-  const handleAddAddress = async (values: AddressPayload) => {
-    setLoading(true);
-    setModalError(null);
-    addAddress(values)
-      .then(() => {
-        setModalOpened(false);
-        // Optionally, update addresses state here if you want instant UI update
-        // setAddresses((prev) => [...prev, { ...values, id: newId }]);
-      })
-      .catch(() => {
-        setModalError('Failed to add address');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const handleAddAddress = async (values: AddressPayload, isFavourite: boolean = false) => {
+  setLoading(true);
+  setModalError(null);
+  addAddress(values, isFavourite)
+    .then(() => {
+      setModalOpened(false);
+      // Optionally, update addresses state here if you want instant UI update
+      // setAddresses((prev) => [...prev, { ...values, id: newId, isFavourite }]);
+    })
+    .catch(() => {
+      setModalError('Failed to add address');
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+};
 
   const handleUpdateAddress = async (id: number, values: AddressPayload) => {
     setLoading(true);
@@ -125,6 +125,7 @@ export default function UserInfo({ user }: { user: UserInfoType }) {
           onClose={() => setModalOpened(false)}
           onSubmit={handleAddAddress}
           isEditing={false}
+          hasOtherAddresses={user.addresses.length > 0}
           loading={loading}
           error={modalError}
         />

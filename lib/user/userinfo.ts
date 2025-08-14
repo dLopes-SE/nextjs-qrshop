@@ -1,6 +1,6 @@
 import serverAxios from '@/lib/serverAxios';
 import { AddressPayload } from '@/types/User/AddressPayload';
-import { Address } from '@/types/User/Address';
+import { Address } from '@/types/User/AddressPayload';
 import { UserInfo as UserInfoType } from '@/types/User/UserInfo';
 import axios from '@/lib/axios';
 
@@ -13,9 +13,9 @@ export async function getUserInfo(): Promise<UserInfoType> {
     });
 }
 
-export async function addAddress(address: AddressPayload): Promise<void> {
+export async function addAddress(address: AddressPayload, isFavourite: boolean): Promise<void> {
   return axios
-    .post<void>('/user/address', address)
+    .post<void>('/user/address', { address, isFavourite })
     .then(() => {})
     .catch(() => {
       throw new Error('Failed to add address');
@@ -24,7 +24,7 @@ export async function addAddress(address: AddressPayload): Promise<void> {
 
 export async function updateAddress(id: number, address: AddressPayload): Promise<void> {
   return axios
-    .patch<void>(`/user/address/${id}`, address)
+    .patch<void>(`/user/address/${id}`, { address })
     .then(() => {})
     .catch(() => {
       throw new Error('Failed to update address');

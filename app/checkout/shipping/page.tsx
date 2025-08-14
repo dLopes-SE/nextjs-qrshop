@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Divider, Select, Stack, Text, TextInput } from '@mantine/core';
 import { addAddress, listAddresses } from '@/lib/user/userinfo';
-import { Address } from '@/types/User/Address';
 import { AddressPayload } from '@/types/User/AddressPayload';
 
 export default function ShippingPage() {
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [favourite, setFavourite] = useState<Address | null>(null);
+  const [addresses, setAddresses] = useState<AddressPayload[]>([]);
+  const [favourite, setFavourite] = useState<AddressPayload | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState<AddressPayload>({

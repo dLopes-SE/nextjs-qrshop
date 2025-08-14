@@ -1,4 +1,4 @@
-import { Address } from "./Address";
+import { Address } from "./AddressPayload";
 
 export type UserInfo = {
   email: string;

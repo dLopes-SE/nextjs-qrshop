@@ -8,18 +8,20 @@ import {
   Stack,
   Group,
   Text,
+  Checkbox,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { AddressPayload } from "@/types/User/Address";
+import { AddressPayload } from "@/types/User/AddressPayload";
 
 interface AddressModalProps {
   opened: boolean;
   onClose: () => void;
-  onSubmit: (address: AddressPayload) => Promise<void>;
+  onSubmit: (address: AddressPayload, isFavourite: boolean) => Promise<void>;
   initialAddress?: AddressPayload;
-  isEditing?: boolean;
+  isEditing: boolean;
   loading?: boolean;
   error?: string | null;
+  hasOtherAddresses?: boolean;
 }
 
 export default function AddressModal({
@@ -30,6 +32,7 @@ export default function AddressModal({
   isEditing = false,
   loading = false,
   error = null,
+  hasOtherAddresses = false,
 }: AddressModalProps) {
   const form = useForm<AddressPayload>({
     initialValues: initialAddress || {
@@ -54,13 +57,15 @@ export default function AddressModal({
   });
 
   const [localError, setLocalError] = useState<string | null>(null);
+  const [isFavourite, setIsFavourite] = useState(false);
 
   const handleSubmit = async (values: AddressPayload) => {
     setLocalError(null);
     try {
-      await onSubmit(values);
+      await onSubmit(values, isFavourite);
       onClose();
       form.reset();
+      setIsFavourite(false);
     } catch (err) {
       setLocalError("Failed to save address");
     }
@@ -110,6 +115,13 @@ export default function AddressModal({
             placeholder="United States"
             {...form.getInputProps("country")}
           />
+          {!isEditing && hasOtherAddresses && (
+            <Checkbox
+              label="Set as favourite address"
+              checked={isFavourite}
+              onChange={(e) => setIsFavourite(e.currentTarget.checked)}
+            />
+          )}
           {(error || localError) && (
             <Text c="red" size="sm">
               {error || localError}
