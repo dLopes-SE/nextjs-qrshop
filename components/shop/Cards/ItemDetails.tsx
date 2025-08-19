@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from "next-auth/react";
 import { IconTrash } from '@tabler/icons-react';
+import { useSession } from 'next-auth/react';
 import {
   Badge,
   Button,
@@ -17,6 +17,7 @@ import {
 } from '@mantine/core';
 import { addToCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
 import { ShopItem } from '@/types/Shop/ShopItem';
+import { useCartPreview } from '@/providers/CartPreviewProvider';
 
 interface ItemDetailsProps {
   item: ShopItem;
@@ -24,12 +25,18 @@ interface ItemDetailsProps {
   cartQuantity?: number;
 }
 
-export default function ItemDetails({ item, cartItemId: initialCartItemId, cartQuantity = 0 }: ItemDetailsProps) {
+export default function ItemDetails({
+  item,
+  cartItemId: initialCartItemId,
+  cartQuantity = 0,
+}: ItemDetailsProps) {
   const { data: session } = useSession();
   const [quantity, setQuantity] = useState<number>(cartQuantity);
   const [quantityToAdd, setQuantityToAdd] = useState<number>(1);
   const [inputError, setInputError] = useState<string | undefined>(undefined);
   const [cartItemId, setCartItemId] = useState<number | undefined>(initialCartItemId);
+
+  const { cartPreview, refreshCartPreview} = useCartPreview();
 
   const handleNumberInputChange = (value: number | undefined) => {
     setInputError(undefined); // Reset error on input change
@@ -61,6 +68,7 @@ export default function ItemDetails({ item, cartItemId: initialCartItemId, cartQ
         if (cartItemId !== undefined) {
           setCartItemId(cartItemId);
         }
+        refreshCartPreview();
       })
       .catch((error) => {
         setInputError(error.message);
@@ -81,6 +89,7 @@ export default function ItemDetails({ item, cartItemId: initialCartItemId, cartQ
       .then(() => {
         setQuantity(newQuantity);
         setQuantityToAdd(1);
+        refreshCartPreview();
       })
       .catch((error) => {
         setInputError(error.message);
@@ -97,6 +106,7 @@ export default function ItemDetails({ item, cartItemId: initialCartItemId, cartQ
         setQuantity(0);
         setQuantityToAdd(1);
         setCartItemId(undefined);
+        refreshCartPreview();
       })
       .catch((error) => {
         setInputError(error.message);
@@ -123,7 +133,7 @@ export default function ItemDetails({ item, cartItemId: initialCartItemId, cartQ
               {item.description}
             </Text>
             <Divider my="xs" />
-            {session && (
+            {session && cartPreview?.isCartChangeAllowed && (
               <>
                 <Group>
                   {quantity > 0 && (

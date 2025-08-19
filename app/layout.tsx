@@ -7,6 +7,7 @@ import { HeaderMenu } from '@/components/Navbar/HeaderMenu';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { isAdmin } from "@/lib/auth/jwt";
+import { CartPreviewProvider } from '@/providers/CartPreviewProvider';
 
 export const metadata: Metadata = {
   title: 'QrShop - This is my title.',
@@ -34,8 +35,10 @@ export default async function RootLayout({ children }: { children: any }) {
       <body>
         <NextAuthProvider>
           <ThemeProvider>
-            <HeaderMenu isAdmin={isAdminUser} />
-            {children}
+            <CartPreviewProvider>
+              <HeaderMenu isAdmin={isAdminUser} />
+              {children}
+            </CartPreviewProvider>
           </ThemeProvider>
         </NextAuthProvider>
       </body>

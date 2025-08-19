@@ -1,10 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import { ActionIcon, Menu, Text, Divider, Button, Stack, Indicator } from '@mantine/core';
-import { useEffect, useState } from 'react';
 import CartMenuItem from './CartMenuItem';
 import type { CartMenuItem as CartMenuItemType } from '@/types/Cart/CartMenuItem';
-import { getCartPreview } from '@/lib/shop/cart';
+import { useCartPreview } from '@/providers/CartPreviewProvider';
 
 const CartIcon = (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -16,26 +16,15 @@ const CartIcon = (
 );
 
 export default function CartMenu() {
-  const [cartItems, setCartItems] = useState<CartMenuItemType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [subTotal, setSubTotal] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
+  const { cartPreview, loading, error, fetchCartPreview } = useCartPreview();
 
   useEffect(() => {
-    getCartPreview()
-      .then(res => {
-        setCartItems(res.items || []);
-        setSubTotal(res.subTotal || 0);
-        setTotalItems(res.quantity || 0);
-      })
-      .catch(() => {
-        setCartItems([]);
-        setTotalItems(0);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+    fetchCartPreview();
+  }, [fetchCartPreview]);
+
+  const cartItems: CartMenuItemType[] = cartPreview?.items || [];
+  const subTotal = cartPreview?.subTotal || 0;
+  const totalItems = cartPreview?.quantity || 0;
 
   return (
     <Menu shadow="md" width={300} position="bottom-end">
@@ -61,6 +50,8 @@ export default function CartMenu() {
           <Divider my="xs" />
           {loading ? (
             <Text size="sm" c="dimmed" ta="center">Loading...</Text>
+          ) : error ? (
+            <Text size="sm" c="red" ta="center">{error}</Text>
           ) : cartItems.length === 0 ? (
             <Text size="sm" c="dimmed" ta="center">Your cart is empty.</Text>
           ) : (

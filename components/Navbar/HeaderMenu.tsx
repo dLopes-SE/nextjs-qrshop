@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import {
-  ActionIcon,
   Box,
   Burger,
   Button,
@@ -53,26 +52,26 @@ export function HeaderMenu({ isAdmin = false }: { isAdmin?: boolean }) {
           <QrshopLogo size={32} />
 
           <Group h="100%" gap={0} visibleFrom="sm">
-            <a href="/" className={classes.link}>
+            <Link href="/" className={classes.link}>
               Home
-            </a>
-            <a href="/shop" className={classes.link}>
+            </Link>
+            <Link href="/shop" className={classes.link}>
               Shop
-            </a>
-            <a href="#" className={classes.link}>
+            </Link>
+            <Link href="#" className={classes.link}>
               Learn
-            </a>
-            <a href="#" className={classes.link}>
+            </Link>
+            <Link href="#" className={classes.link}>
               Academy
-            </a>
+            </Link>
             {isAdmin && (
-              <a
+              <Link
                 href="/admin"
                 className={classes.link}
                 style={{ fontWeight: 700, color: '#4f46e5' }}
               >
                 Admin
-              </a>
+              </Link>
             )}
           </Group>
 

@@ -24,7 +24,6 @@ export default function ShippingPage() {
   useEffect(() => {
     listAddresses().then((list) => {
       setAddresses(list);
-      console.log('Fetched addresses:', list);
       const fav = list.find((addr) => addr.isFavourite);
       setFavourite(fav || null);
       setSelectedId(fav ? fav.id.toString() : null);
