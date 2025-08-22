@@ -14,6 +14,8 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { createStyles } from '@mantine/styles';
+import { useEffect, useState } from 'react';
+import { isUserAdmin } from '@/lib/user/userinfo';
 import CartMenu from '../Cart/CartMenu';
 import QrshopLogo from '../Logo/QrshopLogo';
 import ProfileMenu from '../Profile/ProfileMenu';
@@ -40,10 +42,19 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function HeaderMenu({ isAdmin = false }: { isAdmin?: boolean }) {
+export function HeaderMenu() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const { data: session, status } = useSession();
   const { classes } = useStyles();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (session?.user) {
+      isUserAdmin().then(setIsAdmin).catch(() => setIsAdmin(false));
+    } else {
+      setIsAdmin(false);
+    }
+  }, [session?.user]);
 
   return (
     <Box>

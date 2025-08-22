@@ -1,6 +1,6 @@
 import serverAxios from '@/lib/serverAxios';
 import { AddressPayload } from '@/types/User/AddressPayload';
-import { Address } from '@/types/User/AddressPayload';
+import { Address } from '@/types/User/Address';
 import { UserInfo as UserInfoType } from '@/types/User/UserInfo';
 import axios from '@/lib/axios';
 
@@ -10,6 +10,24 @@ export async function getUserInfo(): Promise<UserInfoType> {
     .then((res) => res.data)
     .catch(() => {
       throw new Error('Failed to fetch user info');
+    });
+}
+
+export async function isUserAdmin(): Promise<boolean> {
+  return axios
+    .get<boolean>('/user/me/is-admin')
+    .then((res) => res.data)
+    .catch(() => {
+      return false; // Return false if not authenticated or error
+    });
+}
+
+export async function isUserAdminSS(): Promise<boolean> {
+  return serverAxios
+    .get<boolean>('/user/me/is-admin')
+    .then((res) => res.data)
+    .catch(() => {
+      return false; // Return false if not authenticated or error
     });
 }
 
