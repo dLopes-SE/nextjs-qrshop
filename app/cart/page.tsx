@@ -5,6 +5,7 @@ import { Center, Stack, Text, Divider, Button, Group, Paper, Loader, Grid, Box }
 import CartPageItem from '@/components/Cart/CartPageItem';
 import { getCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
 import type { CartMenuItemWithDetails } from '@/types/Cart/CartMenuItemWithDetails';
+import Link from 'next/link';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartMenuItemWithDetails[]>([]);
@@ -105,6 +106,8 @@ export default function CartPage() {
                   </Text>
                 </Group>
                 <Button
+                  component={Link}
+                  href="/checkout/shipping"
                   fullWidth
                   radius="md"
                   color="indigo"

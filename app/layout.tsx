@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/providers/ThemeProvider';
 import { NextAuthProvider } from '../providers/SessionProvider';
 import { HeaderMenu } from '@/components/Navbar/HeaderMenu';
 import { CartPreviewProvider } from '@/providers/CartPreviewProvider';
-import { isUserAdmin } from '@/lib/user/userinfo';
 
 export const metadata: Metadata = {
   title: 'QrShop - This is my title.',
