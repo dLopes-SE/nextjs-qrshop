@@ -1,19 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Card, Divider, Radio, Select, Stack, Text, Alert, Loader } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { addAddress, listAddresses } from '@/lib/user/userinfo';
 import { Address } from '@/types/User/Address';
 import { AddressPayload } from '@/types/User/AddressPayload';
 import AddressForm from '@/components/Checkout/AddressForm';
+import { createOrder } from '@/lib/shop/order';
+import { CheckoutRequest } from '@/types/Shop/CheckoutRequest';
 
 export default function ShippingPage() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<'list' | 'custom'>('list');
   const [_adding, setAdding] = useState(false);
-  const [form, setForm] = useState<AddressPayload>({
+  const [addressForm, setAddressForm] = useState<AddressPayload>({
     fullName: '',
     phoneNumber: '',
     addressLine1: '',
@@ -27,6 +30,9 @@ export default function ShippingPage() {
   const [addLoading, setAddLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [orderLoading, setOrderLoading] = useState(false);
+
+  const router = useRouter();
 
   // Load addresses on mount
   useEffect(() => {
@@ -38,7 +44,7 @@ export default function ShippingPage() {
           setSelectedType('list');
           const fav = list.find((addr) => addr.isFavourite) || list[0];
           setSelectedId(fav.id.toString());
-          setForm({
+          setAddressForm({
             fullName: fav.fullName,
             phoneNumber: fav.phoneNumber,
             addressLine1: fav.addressLine1,
@@ -51,7 +57,7 @@ export default function ShippingPage() {
         } else {
           setSelectedType('custom');
           setSelectedId(null);
-          setForm({
+          setAddressForm({
             fullName: '',
             phoneNumber: '',
             addressLine1: '',
@@ -74,7 +80,7 @@ export default function ShippingPage() {
     setAdding(false);
     const addr = addresses.find((a) => a.id.toString() === id);
     if (addr) {
-      setForm({
+      setAddressForm({
         fullName: addr.fullName,
         phoneNumber: addr.phoneNumber,
         addressLine1: addr.addressLine1,
@@ -92,7 +98,7 @@ export default function ShippingPage() {
     setSelectedType('custom');
     setSelectedId(null);
     setAdding(false);
-    setForm({
+    setAddressForm({
       fullName: '',
       phoneNumber: '',
       addressLine1: '',
@@ -107,7 +113,7 @@ export default function ShippingPage() {
 
   // Basic validation for required fields
   const validateForm = () => {
-    if (!form.fullName || !form.phoneNumber || !form.addressLine1 || !form.postalCode || !form.city || !form.state || !form.country) {
+    if (!addressForm.fullName || !addressForm.phoneNumber || !addressForm.addressLine1 || !addressForm.postalCode || !addressForm.city || !addressForm.state || !addressForm.country) {
       setFormError('Please fill in all required fields.');
       return false;
     }
@@ -122,43 +128,66 @@ export default function ShippingPage() {
     }
     setAddLoading(true);
     setError(null);
-    try {
-      await addAddress(form, false);
-      const list = await listAddresses();
-      setAddresses(list);
-      // Select the newly added address
-      const newAddr = list[list.length - 1];
-      setSelectedType('list');
-      setSelectedId(newAddr.id.toString());
-      setForm({
-        fullName: newAddr.fullName,
-        phoneNumber: newAddr.phoneNumber,
-        addressLine1: newAddr.addressLine1,
-        addressLine2: newAddr.addressLine2,
-        postalCode: newAddr.postalCode,
-        city: newAddr.city,
-        state: newAddr.state,
-        country: newAddr.country,
-      });
-      setFormError(null);
-    } catch (err: any) {
-      setError('Failed to add address. Please try again.');
-    } finally {
-      setAddLoading(false);
-    }
+    addAddress(addressForm, false)
+      .then(() => listAddresses())
+      .then((list) => {
+        setAddresses(list);
+        const newAddr = list[list.length - 1];
+        setSelectedType('list');
+        setSelectedId(newAddr.id.toString());
+        setAddressForm({
+          fullName: newAddr.fullName,
+          phoneNumber: newAddr.phoneNumber,
+          addressLine1: newAddr.addressLine1,
+          addressLine2: newAddr.addressLine2,
+          postalCode: newAddr.postalCode,
+          city: newAddr.city,
+          state: newAddr.state,
+          country: newAddr.country,
+        });
+        setFormError(null);
+      })
+      .catch(() => setError('Failed to add address. Please try again.'))
+      .finally(() => setAddLoading(false));
   };
 
   const handleFormChange = (field: keyof AddressPayload, value: string) => {
     if (selectedType === 'custom') {
-      setForm((f) => ({ ...f, [field]: value }));
+      setAddressForm((f) => ({ ...f, [field]: value }));
     }
+  };
+
+  // Handle order creation and redirect
+  const handleContinueToReview = () => {
+    setOrderLoading(true);
+    setError(null);
+
+    // Always send both properties, set unused one to null
+    const checkoutRequest: CheckoutRequest = {
+      addressId: selectedType === 'list' && selectedId ? parseInt(selectedId, 10) : null,
+      addressRequest: selectedType === 'custom' ? addressForm : null,
+    };
+
+    if (selectedType === 'custom' && !validateForm()) {
+      setOrderLoading(false);
+      return;
+    }
+
+    createOrder(checkoutRequest)
+      .then(() => {
+        router.push('/checkout/review');
+      })
+      .catch(() => {
+        setError('Failed to create order. Please try again.');
+      })
+      .finally(() => setOrderLoading(false));
   };
 
   return (
     <Card shadow="md" radius="md" p="xl" withBorder>
       <Stack gap="md">
         <Text fw={700} size="xl" color="indigo.7">
-          Shipping Information
+          Shipping Information Shipping Information
         </Text>
         <Divider />
         {loading ? (
@@ -178,7 +207,7 @@ export default function ShippingPage() {
                     setSelectedType('list');
                     const fav = addresses.find((addr) => addr.isFavourite) || addresses[0];
                     setSelectedId(fav.id.toString());
-                    setForm({
+                    setAddressForm({
                       fullName: fav.fullName,
                       phoneNumber: fav.phoneNumber,
                       addressLine1: fav.addressLine1,
@@ -258,7 +287,7 @@ export default function ShippingPage() {
                 </Text>
               </Stack>
             )}
-            <AddressForm form={form} onChange={handleFormChange} readOnly={selectedType === 'list'} />
+            <AddressForm form={addressForm} onChange={handleFormChange} readOnly={selectedType === 'list'} />
             {selectedType === 'custom' && (
               <Stack gap="xs">
                 {formError && (
@@ -292,6 +321,8 @@ export default function ShippingPage() {
               size="lg"
               mt="md"
               style={{ fontWeight: 700 }}
+              onClick={handleContinueToReview}
+              loading={orderLoading}
             >
               Continue to Review
             </Button>
