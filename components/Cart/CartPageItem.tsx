@@ -1,4 +1,6 @@
+import { useSession } from 'next-auth/react';
 import { Badge, Button, Divider, Group, Image, NumberInput, Stack, Text } from '@mantine/core';
+import { useCartPreview } from '@/providers/CartPreviewProvider';
 import type { CartMenuItemWithDetails } from '@/types/Cart/CartMenuItemWithDetails';
 
 interface CartPageItemProps {
@@ -7,7 +9,14 @@ interface CartPageItemProps {
   onUpdateCart?: (id: number, quantity: number) => void;
 }
 
-export default function CartPageItem({ item, onItemRemove: onRemove, onUpdateCart }: CartPageItemProps) {
+export default function CartPageItem({
+  item,
+  onItemRemove: onRemove,
+  onUpdateCart,
+}: CartPageItemProps) {
+  const { data: session } = useSession();
+  const { cartPreview } = useCartPreview();
+
   return (
     <>
       <Group align="flex-start" gap="md" wrap="nowrap" style={{ width: '100%', padding: '12px 0' }}>
@@ -34,7 +43,7 @@ export default function CartPageItem({ item, onItemRemove: onRemove, onUpdateCar
             {item.description}
           </Text>
           <Group gap="xs" mt={4}>
-            {onUpdateCart && (
+            {session && cartPreview?.isCartChangeAllowed && onUpdateCart && (
               <NumberInput
                 value={item.quantity}
                 min={1}
@@ -45,7 +54,7 @@ export default function CartPageItem({ item, onItemRemove: onRemove, onUpdateCar
                 aria-label="Quantity"
               />
             )}
-            {onRemove && (
+            {session && cartPreview?.isCartChangeAllowed && onRemove && (
               <Button
                 color="gray"
                 variant="outline"

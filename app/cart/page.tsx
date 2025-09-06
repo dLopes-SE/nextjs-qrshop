@@ -6,12 +6,14 @@ import CartPageItem from '@/components/Cart/CartPageItem';
 import { getCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
 import type { CartMenuItemWithDetails } from '@/types/Cart/CartMenuItemWithDetails';
 import Link from 'next/link';
+import { useCartPreview } from '@/providers/CartPreviewProvider';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartMenuItemWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [subTotal, setSubTotal] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const { refreshCartPreview } = useCartPreview();
 
   useEffect(() => {
     getCart()
@@ -33,6 +35,7 @@ export default function CartPage() {
     setCartItems(res.items || []);
     setSubTotal(res.subTotal || 0);
     setTotalItems(res.quantity || 0);
+    refreshCartPreview();
   };
 
   const onItemRemove = async (id: number) => {
@@ -41,6 +44,7 @@ export default function CartPage() {
     setCartItems(res.items || []);
     setSubTotal(res.subTotal || 0);
     setTotalItems(res.quantity || 0);
+    refreshCartPreview();
   };
 
   if (loading) {
