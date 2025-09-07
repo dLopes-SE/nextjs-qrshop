@@ -5,15 +5,18 @@ import { Center, Stack, Text, Divider, Button, Group, Paper, Loader, Grid, Box }
 import CartPageItem from '@/components/Cart/CartPageItem';
 import { getCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
 import type { CartMenuItemWithDetails } from '@/types/Cart/CartMenuItemWithDetails';
-import Link from 'next/link';
 import { useCartPreview } from '@/providers/CartPreviewProvider';
+import { OrderStatusEnum } from '@/types/Cart/OrderStatusEnum';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartMenuItemWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [subTotal, setSubTotal] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const [checkoutStatus, setCheckoutStatus] = useState<OrderStatusEnum>(OrderStatusEnum.None);
   const { refreshCartPreview } = useCartPreview();
+  const router = useRouter();
 
   useEffect(() => {
     getCart()
@@ -21,10 +24,13 @@ export default function CartPage() {
         setCartItems(res.items || []);
         setSubTotal(res.subTotal || 0);
         setTotalItems(res.quantity || 0);
+        console.log('res.checkoutStatus', res.checkoutStatus);
+        setCheckoutStatus(res.checkoutStatus || 'None');
       })
       .catch(() => {
         setCartItems([]);
         setTotalItems(0);
+        setCheckoutStatus(OrderStatusEnum.None);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -35,6 +41,7 @@ export default function CartPage() {
     setCartItems(res.items || []);
     setSubTotal(res.subTotal || 0);
     setTotalItems(res.quantity || 0);
+    setCheckoutStatus(res.checkoutStatus || 'None');
     refreshCartPreview();
   };
 
@@ -44,7 +51,23 @@ export default function CartPage() {
     setCartItems(res.items || []);
     setSubTotal(res.subTotal || 0);
     setTotalItems(res.quantity || 0);
+    setCheckoutStatus(res.checkoutStatus || 'None');
     refreshCartPreview();
+  };
+
+  const handleCheckout = () => {
+    if (
+      checkoutStatus === OrderStatusEnum.Pending
+    ) {
+      router.push('/checkout/review');
+    } else if (
+      checkoutStatus === OrderStatusEnum.Paying ||
+      checkoutStatus === OrderStatusEnum.PaymentFailed
+    ) {
+      router.push('/checkout/shipping');
+    } else {
+      router.push('/checkout/shipping');
+    }
   };
 
   if (loading) {
@@ -53,6 +76,17 @@ export default function CartPage() {
         <Loader size="lg" />
       </Center>
     );
+  }
+
+  // Button label logic
+  let checkoutLabel = 'Checkout';
+  if (checkoutStatus === OrderStatusEnum.Pending) {
+    checkoutLabel = 'Resume Checkout';
+  } else if (
+    checkoutStatus === OrderStatusEnum.Paying ||
+    checkoutStatus === OrderStatusEnum.PaymentFailed
+  ) {
+    checkoutLabel = 'Continue Payment';
   }
 
   return (
@@ -110,16 +144,15 @@ export default function CartPage() {
                   </Text>
                 </Group>
                 <Button
-                  component={Link}
-                  href="/checkout/shipping"
                   fullWidth
                   radius="md"
                   color="indigo"
                   style={{ fontWeight: 700, marginTop: 16 }}
                   size="lg"
                   disabled={cartItems.length === 0}
+                  onClick={handleCheckout}
                 >
-                  Checkout
+                  {checkoutLabel}
                 </Button>
               </Stack>
             </Box>

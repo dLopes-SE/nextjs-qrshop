@@ -187,7 +187,7 @@ export default function ShippingPage() {
     <Card shadow="md" radius="md" p="xl" withBorder>
       <Stack gap="md">
         <Text fw={700} size="xl" color="indigo.7">
-          Shipping Information Shipping Information
+          Shipping Information 
         </Text>
         <Divider />
         {loading ? (
