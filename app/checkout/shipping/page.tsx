@@ -8,7 +8,7 @@ import { addAddress, listAddresses } from '@/lib/user/userinfo';
 import { Address } from '@/types/User/Address';
 import { AddressPayload } from '@/types/User/AddressPayload';
 import AddressForm from '@/components/Checkout/AddressForm';
-import { createOrder } from '@/lib/shop/order';
+import { createCheckout } from '@/lib/shop/order';
 import { CheckoutRequest } from '@/types/Shop/CheckoutRequest';
 
 export default function ShippingPage() {
@@ -173,7 +173,7 @@ export default function ShippingPage() {
       return;
     }
 
-    createOrder(checkoutRequest)
+    createCheckout(checkoutRequest)
       .then(() => {
         router.push('/checkout/review');
       })

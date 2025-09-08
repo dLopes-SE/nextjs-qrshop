@@ -2,46 +2,42 @@
 
 import { useEffect, useState } from 'react';
 import { Button, Card, Divider, Group, Loader, Stack, Text } from '@mantine/core';
-import { getCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
-import { CartType } from '@/types/Cart/Cart';
-import { listAddresses } from '@/lib/user/userinfo';
-import { Address } from '@/types/User/Address';
+import { getCheckout } from '@/lib/shop/order';
 import CartPageItem from '@/components/Cart/CartPageItem';
 import { useCartPreview } from '@/providers/CartPreviewProvider';
+import { OrderType } from '@/types/Order/Order';
+import { removeFromCart, updateCartItem } from '@/lib/shop/cart';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutReviewPage() {
-  const [cart, setCart] = useState<CartType | null>(null);
+  const [checkout, setCheckout] = useState<OrderType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [address, setAddress] = useState<Address | null>(null);
-  const [addressLoading, setAddressLoading] = useState(true);
-  const { refreshCartPreview } = useCartPreview();
+  const { cartPreview, refreshCartPreview } = useCartPreview();
+  const router = useRouter();
 
   useEffect(() => {
-    getCart()
-      .then((data) => {
-        setCart(data);
-      })
-      .finally(() => setLoading(false));
+    getCheckout()
+      .then((order) => {
+        if (order === undefined || !order?.address) {
+          router.push('/cart');
+        }
 
-    listAddresses()
-      .then((addresses) => {
-        setAddress(addresses[0] ?? null);
+        setCheckout(order);
       })
-      .finally(() => setAddressLoading(false));
+      .catch(() => router.push('/cart'))
+      .finally(() => setLoading(false));
   }, []);
 
   // Cart update handlers
   const handleUpdateCart = async (id: number, quantity: number) => {
     await updateCartItem(id, quantity);
-    const res = await getCart();
-    setCart(res);
+    setCheckout(await getCheckout());
     refreshCartPreview();
   };
 
   const handleItemRemove = async (id: number) => {
     await removeFromCart(id);
-    const res = await getCart();
-    setCart(res);
+    setCheckout(await getCheckout());
     refreshCartPreview();
   };
 
@@ -68,29 +64,28 @@ export default function CheckoutReviewPage() {
             borderColor: '#3b5bdb22',
           }}
         >
-          {addressLoading ? (
+          {loading ? (
             <Loader color="indigo" />
-          ) : address ? (
+          ) : checkout?.address ? (
             <Stack gap={4}>
               <Text fw={700} size="md">
-                {address.fullName}
+                {checkout.address.fullName}
               </Text>
               <Text size="sm" c="dimmed">
-                {address.addressLine1}
-                {address.addressLine2 ? `, ${address.addressLine2}` : ''}, {address.city}, {address.state}, {address.country}
+                {checkout.address.addressLine1}
+                {checkout.address.addressLine2 ? `, ${checkout.address.addressLine2}` : ''}, {checkout.address.city}, {checkout.address.state}, {checkout.address.country}
               </Text>
               <Group gap="xs" mt={2}>
                 <Text size="sm">
-                  <b>Phone:</b> {address.phoneNumber}
+                  <b>Phone:</b> {checkout.address.phoneNumber}
                 </Text>
                 <Text size="sm" ml="md">
-                  <b>Postal Code:</b> {address.postalCode}
+                  <b>Postal Code:</b> {checkout.address.postalCode}
                 </Text>
               </Group>
             </Stack>
-          ) : (
-            <Text c="dimmed">No shipping address found.</Text>
-          )}
+          ) : null /* No Text shown, redirect handled in useEffect */
+          }
         </Card>
 
         <Divider my="sm" />
@@ -100,9 +95,9 @@ export default function CheckoutReviewPage() {
         </Text>
         {loading ? (
           <Loader color="indigo" />
-        ) : cart && cart.items.length > 0 ? (
+        ) : Array.isArray(checkout?.items) && checkout.items.length > 0 ? (
           <Stack gap="xs">
-            {cart.items.map((item) => (
+            {checkout.items.map((item) => (
               <CartPageItem
                 key={item.id}
                 item={item}
@@ -114,7 +109,7 @@ export default function CheckoutReviewPage() {
             <Group justify="space-between">
               <Text fw={700}>Subtotal</Text>
               <Text fw={700} color="orange.6">
-                ${cart.subTotal.toFixed(2)}
+                ${cartPreview?.subTotal.toFixed(2)}
               </Text>
             </Group>
           </Stack>

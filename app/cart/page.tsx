@@ -6,7 +6,7 @@ import CartPageItem from '@/components/Cart/CartPageItem';
 import { getCart, removeFromCart, updateCartItem } from '@/lib/shop/cart';
 import type { CartMenuItemWithDetails } from '@/types/Cart/CartMenuItemWithDetails';
 import { useCartPreview } from '@/providers/CartPreviewProvider';
-import { OrderStatusEnum } from '@/types/Cart/OrderStatusEnum';
+import { OrderStatusEnum } from '@/types/Order/OrderStatusEnum';
 import { useRouter } from 'next/navigation';
 
 export default function CartPage() {

@@ -1,5 +1,5 @@
 import { CartMenuItemWithDetails } from "./CartMenuItemWithDetails";
-import { OrderStatusEnum } from "./OrderStatusEnum";
+import { OrderStatusEnum } from "../Order/OrderStatusEnum";
 
 export type CartType = {
   quantity: number;
