@@ -19,3 +19,12 @@ export async function getCheckout(): Promise<OrderType> {
       throw new Error("Failed to get checkout");
     });
 }
+
+export async function updateCheckout(payload: CheckoutRequest): Promise<void> {
+  return axios
+    .patch<void>("/order/checkout/address", payload)
+    .then(() => {})
+    .catch(() => {
+      throw new Error("Failed to update checkout");
+    });
+}

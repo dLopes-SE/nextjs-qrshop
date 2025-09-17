@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, Divider, Radio, Select, Stack, Text, Alert, Loader } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { Alert, Button, Card, Divider, Loader, Radio, Select, Stack, Text } from '@mantine/core';
+import AddressForm from '@/components/Checkout/AddressForm';
+import { createCheckout, getCheckout, updateCheckout } from '@/lib/shop/order';
 import { addAddress, listAddresses } from '@/lib/user/userinfo';
+import { OrderType } from '@/types/Order/Order';
+import { CheckoutRequest } from '@/types/Shop/CheckoutRequest';
 import { Address } from '@/types/User/Address';
 import { AddressPayload } from '@/types/User/AddressPayload';
-import AddressForm from '@/components/Checkout/AddressForm';
-import { createCheckout } from '@/lib/shop/order';
-import { CheckoutRequest } from '@/types/Shop/CheckoutRequest';
 
 export default function ShippingPage() {
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -26,23 +27,68 @@ export default function ShippingPage() {
     state: '',
     country: '',
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [addLoading, setAddLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [orderLoading, setOrderLoading] = useState(false);
+  const [checkout, setCheckout] = useState<OrderType | null>(null);
 
   const router = useRouter();
 
-  // Load addresses on mount
+  // Load addresses and checkout on mount
   useEffect(() => {
     setLoading(true);
-    listAddresses()
-      .then((list) => {
-        setAddresses(list);
-        if (list.length) {
+
+    // Fetch addresses and checkout in parallel
+    Promise.all([
+      listAddresses().catch(() => []),
+      getCheckout().catch((err) => {
+        // If 404, treat as no checkout
+        if (err.message?.includes('404')) {
+          return null;
+        }
+        setError('Failed to get checkout');
+        return null;
+      }),
+    ])
+      .then(([addressList, checkoutData]) => {
+        setAddresses(addressList);
+
+        if (checkoutData) {
+          if (!checkoutData.address)  {
+            setError('Checkout data is missing address information.');
+            return;
+          }
+          setCheckout(checkoutData);
+
+          // Prefill address form with checkout address
+          setAddressForm({
+            fullName: checkoutData.address.fullName,
+            phoneNumber: checkoutData.address.phoneNumber,
+            addressLine1: checkoutData.address.addressLine1,
+            addressLine2: checkoutData.address.addressLine2,
+            postalCode: checkoutData.address.postalCode,
+            city: checkoutData.address.city,
+            state: checkoutData.address.state,
+            country: checkoutData.address.country,
+          });
+
+          // If checkout has addressId and it's in the list, select it
+          if (checkoutData.addressId && addressList.some((a) => a.id === checkoutData.addressId)) {
+            setSelectedType('list');
+            setSelectedId(checkoutData.addressId.toString());
+          } else {
+            setSelectedType('custom');
+            setSelectedId(null);
+          }
+
+          return;
+        }
+        // No checkout: default to favourite or custom
+        if (addressList.length > 0) {
           setSelectedType('list');
-          const fav = list.find((addr) => addr.isFavourite) || list[0];
+          const fav = addressList.find((addr) => addr.isFavourite) || addressList[0];
           setSelectedId(fav.id.toString());
           setAddressForm({
             fullName: fav.fullName,
@@ -69,7 +115,6 @@ export default function ShippingPage() {
           });
         }
       })
-      .catch(() => setError('Failed to load addresses'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -98,22 +143,49 @@ export default function ShippingPage() {
     setSelectedType('custom');
     setSelectedId(null);
     setAdding(false);
-    setAddressForm({
-      fullName: '',
-      phoneNumber: '',
-      addressLine1: '',
-      addressLine2: '',
-      postalCode: '',
-      city: '',
-      state: '',
-      country: '',
-    });
     setFormError(null);
+    if (checkout) {
+      // Prefill with checkout address if available
+      if (!checkout.address) {
+        setError('Checkout data is missing address information.');
+        return;
+      }
+      
+      setAddressForm({
+        fullName: checkout.address.fullName,
+        phoneNumber: checkout.address.phoneNumber,
+        addressLine1: checkout.address.addressLine1,
+        addressLine2: checkout.address.addressLine2,
+        postalCode: checkout.address.postalCode,
+        city: checkout.address.city,
+        state: checkout.address.state,
+        country: checkout.address.country,
+      });
+    } else {
+      setAddressForm({
+        fullName: '',
+        phoneNumber: '',
+        addressLine1: '',
+        addressLine2: '',
+        postalCode: '',
+        city: '',
+        state: '',
+        country: '',
+      });
+    }
   };
 
   // Basic validation for required fields
   const validateForm = () => {
-    if (!addressForm.fullName || !addressForm.phoneNumber || !addressForm.addressLine1 || !addressForm.postalCode || !addressForm.city || !addressForm.state || !addressForm.country) {
+    if (
+      !addressForm.fullName ||
+      !addressForm.phoneNumber ||
+      !addressForm.addressLine1 ||
+      !addressForm.postalCode ||
+      !addressForm.city ||
+      !addressForm.state ||
+      !addressForm.country
+    ) {
       setFormError('Please fill in all required fields.');
       return false;
     }
@@ -157,12 +229,11 @@ export default function ShippingPage() {
     }
   };
 
-  // Handle order creation and redirect
+  // Handle order creation or update and redirect
   const handleContinueToReview = () => {
     setOrderLoading(true);
     setError(null);
 
-    // Always send both properties, set unused one to null
     const checkoutRequest: CheckoutRequest = {
       addressId: selectedType === 'list' && selectedId ? parseInt(selectedId, 10) : null,
       addressRequest: selectedType === 'custom' ? addressForm : null,
@@ -173,12 +244,15 @@ export default function ShippingPage() {
       return;
     }
 
-    createCheckout(checkoutRequest)
+    // If we already have a checkout, update it; otherwise, create new
+    const action = checkout ? updateCheckout : createCheckout;
+
+    action(checkoutRequest)
       .then(() => {
         router.push('/checkout/review');
       })
       .catch(() => {
-        setError('Failed to create order. Please try again.');
+        setError('Failed to save address. Please try again.');
       })
       .finally(() => setOrderLoading(false));
   };
@@ -187,7 +261,7 @@ export default function ShippingPage() {
     <Card shadow="md" radius="md" p="xl" withBorder>
       <Stack gap="md">
         <Text fw={700} size="xl" color="indigo.7">
-          Shipping Information 
+          Shipping Information
         </Text>
         <Divider />
         {loading ? (
@@ -203,20 +277,9 @@ export default function ShippingPage() {
               value={selectedType}
               onChange={(val: string) => {
                 if (val === 'list') {
-                  if (addresses.length) {
-                    setSelectedType('list');
-                    const fav = addresses.find((addr) => addr.isFavourite) || addresses[0];
-                    setSelectedId(fav.id.toString());
-                    setAddressForm({
-                      fullName: fav.fullName,
-                      phoneNumber: fav.phoneNumber,
-                      addressLine1: fav.addressLine1,
-                      addressLine2: fav.addressLine2,
-                      postalCode: fav.postalCode,
-                      city: fav.city,
-                      state: fav.state,
-                      country: fav.country,
-                    });
+                  setSelectedType('list');
+                  if (selectedId) {
+                    handleSelect(selectedId);
                   }
                 } else if (val === 'custom') {
                   handleCustom();
@@ -287,7 +350,11 @@ export default function ShippingPage() {
                 </Text>
               </Stack>
             )}
-            <AddressForm form={addressForm} onChange={handleFormChange} readOnly={selectedType === 'list'} />
+            <AddressForm
+              form={addressForm}
+              onChange={handleFormChange}
+              readOnly={selectedType === 'list'}
+            />
             {selectedType === 'custom' && (
               <Stack gap="xs">
                 {formError && (

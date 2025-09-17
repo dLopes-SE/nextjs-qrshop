@@ -62,6 +62,7 @@ export default function CheckoutReviewPage() {
           style={{
             background: 'linear-gradient(90deg, #f8fafc 60%, #e7f5ff 100%)',
             borderColor: '#3b5bdb22',
+            position: 'relative',
           }}
         >
           {loading ? (
@@ -83,9 +84,24 @@ export default function CheckoutReviewPage() {
                   <b>Postal Code:</b> {checkout.address.postalCode}
                 </Text>
               </Group>
+              {/* Edit link in top right corner */}
+              <Text
+                size="sm"
+                c="indigo.6"
+                style={{
+                  position: 'absolute',
+                  top: 12,
+                  right: 16,
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                }}
+                onClick={() => router.push('/checkout/shipping')}
+              >
+                Edit
+              </Text>
             </Stack>
-          ) : null /* No Text shown, redirect handled in useEffect */
-          }
+          ) : null}
         </Card>
 
         <Divider my="sm" />
