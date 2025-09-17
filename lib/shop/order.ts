@@ -28,3 +28,13 @@ export async function updateCheckout(payload: CheckoutRequest): Promise<void> {
       throw new Error("Failed to update checkout");
     });
 }
+
+export async function createPaymentIntent(): Promise<string> {
+  return axios
+    .post<string>('/payment')
+    .then((response) => response.data)
+    .catch(() => {
+      throw new Error("Failed to create payment intent");
+    });
+}
+
