@@ -34,5 +34,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/dlopes-se/nextjs-qrshop:latest
-            ghcr.io/dlopes-se/nextjs-qrshop:${{ github.sha }}
+            ghcr.io/dlopes-se/nextjs-qrshop-public:latest
+            ghcr.io/dlopes-se/nextjs-qrshop-public:${{ github.sha }}
