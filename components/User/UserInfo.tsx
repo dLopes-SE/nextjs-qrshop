@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Card, Stack, Text, Group, Divider, Button } from '@mantine/core';
-import { Address } from '@/types/User/AddressPayload';
+import { Address } from '@/types/User/Address';
+import { AddressPayload } from '@/types/User/AddressPayload';
 import { UserInfo as UserInfoType } from '@/types/User/UserInfo';
 import UserAddress from './UserAddress';
 import AddressModal from './AddressModal';
 import { addAddress, updateAddress, removeAddress, setFavouriteAddress } from '@/lib/user/userinfo';
-import { AddressPayload } from '@/types/User/AddressPayload';
 
 export default function UserInfo({ user }: { user: UserInfoType }) {
   const [modalOpened, setModalOpened] = useState(false);

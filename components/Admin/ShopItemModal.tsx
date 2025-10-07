@@ -52,7 +52,7 @@ export default function ShopItemModal({
     if (mode === "view" && opened && itemId) {
       setLoading(true);
       getItem(itemId)
-        .then((data) => setItem(data))
+        .then((data) => setItem(data.shopItem))
         .finally(() => setLoading(false));
     } else if (mode === "create") {
       setForm({

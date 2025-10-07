@@ -4,7 +4,7 @@ export const theme: MantineThemeOverride = {
   primaryColor: 'orange',
   components: {
     Select: {
-      styles: (theme) => ({
+      styles: (theme: { colors: { orange: any[]; }; }) => ({
         input: {
           borderColor: theme.colors.orange[4],
           '&:focus': {
@@ -14,7 +14,7 @@ export const theme: MantineThemeOverride = {
       }),
     },
     TextInput: {
-      styles: (theme) => ({
+      styles: (theme: { colors: { orange: any[]; }; }) => ({
         input: {
           borderColor: theme.colors.orange[4],
           '&:focus': {
