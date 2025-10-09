@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create the axios instance
 const backendAxios = axios.create({
-  baseURL: "https://localhost:7256",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://localhost:7256',
   withCredentials: true,
 });
 

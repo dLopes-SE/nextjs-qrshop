@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getServerSession } from "next-auth";
 import authOptions from "@/app/api/auth/[...nextauth]/authOptions";
 
-const baseURL = "https://localhost:7256";
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'https://localhost:7256';
 
 async function serverAxiosRequest<T = any>(
   config: AxiosRequestConfig
