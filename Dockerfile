@@ -4,6 +4,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+
+# Accept build-time ARG
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+# Build the Next.js app
 RUN npm run build
 
 # Run production server
