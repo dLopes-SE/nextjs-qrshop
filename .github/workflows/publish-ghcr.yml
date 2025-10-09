@@ -1,4 +1,4 @@
-name: Publish Docker image to GHCR
+name: Publish Docker image to GHCR (user scoped)
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   build-and-push:
@@ -20,12 +19,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to GitHub Container Registry
+      - name: Log in to GitHub Container Registry (user scoped)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: dlopes-se
+          password: ${{ secrets.GHCR_PAT }} 
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -34,5 +33,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/dlopes-se/nextjs-qrshop:latest
-            ghcr.io/dlopes-se/nextjs-qrshop:${{ github.sha }}
+            ghcr.io/dlopes-se/nextjs-qrshop-public:latest
+            ghcr.io/dlopes-se/nextjs-qrshop-public:${{ github.sha }}
