@@ -34,6 +34,7 @@ jobs:
           push: true
           build-args: |
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            NEXT_PUBLIC_API_URL=http://backend:5000
           tags: |
             ghcr.io/dlopes-se/nextjs-qrshop-public:latest
             ghcr.io/dlopes-se/nextjs-qrshop-public:${{ github.sha }}
