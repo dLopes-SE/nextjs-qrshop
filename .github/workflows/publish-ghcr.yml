@@ -33,7 +33,7 @@ jobs:
           file: ./Dockerfile
           push: true
           build-args: |
-            NEXT_PUBLIC_API_URL=http://localhost:5000
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
           tags: |
             ghcr.io/dlopes-se/nextjs-qrshop-public:latest
             ghcr.io/dlopes-se/nextjs-qrshop-public:${{ github.sha }}
