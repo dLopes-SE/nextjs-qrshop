@@ -1,9 +1,11 @@
 import { AuthOptions } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import FacebookProvider from 'next-auth/providers/facebook';
 import GoogleProvider from 'next-auth/providers/google';
 import axios from '@/lib/axios';
-import { JWT } from 'next-auth/jwt';
+
+const apiBaseUrl = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'https://localhost:7256';
 
 const authOptions: AuthOptions = {
   providers: [
@@ -32,24 +34,26 @@ const authOptions: AuthOptions = {
         }
 
         return axios
-          .post(
-            '/user/login',
-            {
-              email: credentials.email,
-              password: credentials.password,
-            }
-          )
+          .post(`${apiBaseUrl}/user/login`, {
+            email: credentials.email,
+            password: credentials.password,
+          })
           .then((res) => {
             if (res.data && res.data.token) {
+              // Successful login — return user object
               return { id: credentials.email, jwt: res.data.token };
             }
+            // If response didn’t include a token, treat as invalid
             throw new Error('Invalid credentials. Please try again.');
           })
           .catch((error) => {
+            // Specific 400 = bad credentials
             if (error.response && error.response.status === 400) {
               throw new Error('Invalid credentials. Please try again.');
             }
-            throw new Error('An unexpected error occurred. Please try again later.');
+
+            // Any other issue — e.g. network, 401, connection refused, etc.
+            throw new Error('Unable to contact the API. Please try again later.');
           });
       },
     }),
