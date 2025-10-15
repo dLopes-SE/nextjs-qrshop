@@ -1,7 +1,7 @@
 import { Center, SimpleGrid, Text } from "@mantine/core";
 import ShopCard from "@/components/shop/Cards/ShopCard";
 import { ShopItem } from "@/types/Shop/ShopItem";
-import axios from "@/lib/axios";
+import axios from "@/lib/serverAxios";
 
 async function getItems(): Promise<ShopItem[]> {
   const res = await axios.get("/shop/item");
