@@ -5,10 +5,6 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
-# Accept build-time ARG
-ARG NEXTAUTH_SECRET
-ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
-
 # Build the Next.js app
 RUN npm run build
 
