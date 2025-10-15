@@ -5,7 +5,7 @@ import FacebookProvider from 'next-auth/providers/facebook';
 import GoogleProvider from 'next-auth/providers/google';
 import axios from '@/lib/axios';
 
-const apiBaseUrl = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'https://localhost:7256';
+const apiBaseUrl = process.env.INTERNAL_API_URL || 'https://localhost:7256';
 
 const authOptions: AuthOptions = {
   providers: [
