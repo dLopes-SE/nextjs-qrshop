@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcElement } from '@stripe/react-stripe-js';
-import { Button, Loader, Alert, Stack, Paper, Text } from '@mantine/core';
+import {
+  CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
+  useElements,
+  useStripe,
+} from '@stripe/react-stripe-js';
+import { Alert, Button, Loader, Paper, Stack, Text } from '@mantine/core';
+import { useRouter } from 'next/navigation';
 
 const ELEMENT_STYLE = {
   base: {
@@ -25,9 +32,9 @@ const ELEMENT_STYLE = {
 export default function StripePaymentForm({ clientSecret }: { clientSecret: string }) {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,32 +47,44 @@ export default function StripePaymentForm({ clientSecret }: { clientSecret: stri
 
     setLoading(true);
 
-    const cardNumberElement = elements.getElement(CardNumberElement);
-    if (!cardNumberElement) {
-      setError('Card number element not found.');
+    try {
+      const cardNumberElement = elements.getElement(CardNumberElement);
+      if (!cardNumberElement) {
+        setError('Card number element not found.');
+        return;
+      }
+
+      // Confirm the payment with Stripe
+      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardNumberElement,
+        },
+      });
+
+      if (stripeError) {
+        // Redirect to failure page
+        router.push('/payment-failure');
+        return;
+      }
+
+      // Check the payment intent status
+      if (paymentIntent?.status === 'succeeded') {
+        // Redirect to success page
+        router.push('/payment-success');
+      } else if (paymentIntent?.status === 'requires_action') {
+        // 3D Secure / additional authentication required
+        setError('Payment requires additional authentication.');
+      } else {
+        // Other cases (processing, etc.)
+        setError('Payment not completed. Please try again.');
+        router.push('/payment-failure');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+      router.push('/payment-failure');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: cardNumberElement,
-      },
-    });
-
-    if (stripeError) {
-      setError(stripeError.message || 'Payment failed.');
-      setLoading(false);
-      return;
-    }
-
-    if (paymentIntent && paymentIntent.status === 'succeeded') {
-      setSuccess(true);
-    } else {
-      setError('Payment was not successful.');
-    }
-
-    setLoading(false);
   };
 
   return (
@@ -89,12 +108,14 @@ export default function StripePaymentForm({ clientSecret }: { clientSecret: stri
               <Text size="sm" mb={4} fw={700} color="blue.7" style={{ letterSpacing: 0.5 }}>
                 Card Number
               </Text>
-              <div style={{
-                padding: '12px',
-                borderRadius: 8,
-                border: '1px solid #ced4da',
-                background: '#f6f8fa' // subtle light gray
-              }}>
+              <div
+                style={{
+                  padding: '12px',
+                  borderRadius: 8,
+                  border: '1px solid #ced4da',
+                  background: '#f6f8fa', // subtle light gray
+                }}
+              >
                 <CardNumberElement options={{ style: ELEMENT_STYLE }} />
               </div>
             </div>
@@ -102,12 +123,14 @@ export default function StripePaymentForm({ clientSecret }: { clientSecret: stri
               <Text size="sm" mb={4} fw={700} color="blue.7" style={{ letterSpacing: 0.5 }}>
                 Expiry
               </Text>
-              <div style={{
-                padding: '12px',
-                borderRadius: 8,
-                border: '1px solid #ced4da',
-                background: '#f6f8fa'
-              }}>
+              <div
+                style={{
+                  padding: '12px',
+                  borderRadius: 8,
+                  border: '1px solid #ced4da',
+                  background: '#f6f8fa',
+                }}
+              >
                 <CardExpiryElement options={{ style: ELEMENT_STYLE }} />
               </div>
             </div>
@@ -115,25 +138,26 @@ export default function StripePaymentForm({ clientSecret }: { clientSecret: stri
               <Text size="sm" mb={4} fw={700} color="blue.7" style={{ letterSpacing: 0.5 }}>
                 CVC
               </Text>
-              <div style={{
-                padding: '12px',
-                borderRadius: 8,
-                border: '1px solid #ced4da',
-                background: '#f6f8fa'
-              }}>
+              <div
+                style={{
+                  padding: '12px',
+                  borderRadius: 8,
+                  border: '1px solid #ced4da',
+                  background: '#f6f8fa',
+                }}
+              >
                 <CardCvcElement options={{ style: ELEMENT_STYLE }} />
               </div>
             </div>
           </Stack>
           {error && <Alert color="red">{error}</Alert>}
-          {success && <Alert color="green">Payment successful!</Alert>}
           <Button
             type="submit"
             color="indigo"
             radius="md"
             size="md"
             loading={loading}
-            disabled={!stripe || !elements || success}
+            disabled={!stripe || !elements}
             mt={8}
           >
             {loading ? <Loader size="xs" color="white" /> : 'Pay'}

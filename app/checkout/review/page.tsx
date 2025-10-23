@@ -41,6 +41,11 @@ export default function CheckoutReviewPage() {
     refreshCartPreview();
   };
 
+  const handleContinueToPayment = () => {
+    setLoading(true);
+    router.push('/checkout/payment');
+  }
+
   return (
     <Card shadow="md" radius="md" p="xl" withBorder>
       <Stack gap="md">
@@ -136,7 +141,15 @@ export default function CheckoutReviewPage() {
         <Divider my="sm" />
 
         <Group justify="flex-end" mt="md">
-          <Button color="indigo" radius="md" size="md">
+          <Button
+              color="indigo"
+              radius="md"
+              size="lg"
+              mt="md"
+              style={{ fontWeight: 700 }}
+              onClick={handleContinueToPayment}
+              loading={loading}
+            >
             Proceed to Payment
           </Button>
         </Group>
