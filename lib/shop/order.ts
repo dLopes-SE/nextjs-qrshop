@@ -29,12 +29,12 @@ export async function updateCheckout(payload: CheckoutRequest): Promise<void> {
     });
 }
 
-export async function createPaymentIntent(): Promise<string> {
+export async function createPaymentIntent(orderId: number): Promise<string> {
+  console.log(`orders/${orderId}/payment-intents`);
   return axios
-    .post<string>('/payment')
+    .post<string>(`orders/${orderId}/payment-intents`)
     .then((response) => response.data)
     .catch(() => {
       throw new Error("Failed to create payment intent");
     });
 }
-

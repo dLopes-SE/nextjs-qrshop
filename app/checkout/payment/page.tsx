@@ -23,7 +23,7 @@ export default function PaymentPage() {
       .then(async (order) => {
         setCheckout(order);
         // Use the helper to create a PaymentIntent and get the client secret
-        const data = await createPaymentIntent();
+        const data = await createPaymentIntent(order.id);
         setClientSecret(data);
       })
       .catch(() => setError('Failed to load checkout information.'))

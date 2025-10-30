@@ -63,25 +63,25 @@ export default function StripePaymentForm({ clientSecret }: { clientSecret: stri
 
       if (stripeError) {
         // Redirect to failure page
-        router.push('/payment-failure');
+        router.push('/checkout/payment-failure');
         return;
       }
 
       // Check the payment intent status
       if (paymentIntent?.status === 'succeeded') {
         // Redirect to success page
-        router.push('/payment-success');
+        router.push('/checkout/payment-success');
       } else if (paymentIntent?.status === 'requires_action') {
         // 3D Secure / additional authentication required
         setError('Payment requires additional authentication.');
       } else {
         // Other cases (processing, etc.)
         setError('Payment not completed. Please try again.');
-        router.push('/payment-failure');
+        router.push('/checkout/payment-failure');
       }
     } catch (err) {
       setError('An unexpected error occurred.');
-      router.push('/payment-failure');
+      router.push('/checkout/payment-failure');
     } finally {
       setLoading(false);
     }
